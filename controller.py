@@ -92,11 +92,12 @@ class Player:
         self._ID = 1
         self._color = RED
         self._sensitivity = 3
+        self._shoot_sensitivity = 30
         self._slowdown = 1
         self._threshold = 0.08
         self._joystick = joystick # grabs this players joystick object
         joystick.init() # initializes joysticks
-        self._map = [0, 1, 2, 3, 11] # maps joystick buttons, this mapping works with ps4 controllers
+        self._map = []
 	
     def get_init(self):
         status = self._joystick.get_init()
@@ -105,6 +106,15 @@ class Player:
             self._joystick.quit()
 
         return status
+
+    def map_joystick(self):
+        if self._joystick.get_name() == "Wireless Controller":
+            self._map = [0, 1, 2, 3, 4]
+        elif self._joystick.get_name() == "PLAYSTATION(R)3 Controller":
+            self._map = [0, 1, 2, 3, 11]
+        else:
+            self._map = [0, 1, 2, 3, 11] # default mapping
+
 
     def _draw(self):
         pygame.draw.rect(screen, self._color, \
@@ -136,20 +146,20 @@ class Player:
         self._draw()
 
 
-    def _shoot(self):
+    def _shoot(self, proj_container):
         joy_input = self._get_input()
 
         if abs(joy_input[2]) > self._threshold or abs(joy_input[3]) > self._threshold:
-            projs.append(Projectile(self._x + self._width / 2 - 2, self._y + self._height/2 - 2, \
-                    self._sensitivity*joy_input[2], self._sensitivity*joy_input[3], \
+            proj_container.append(Projectile(self._x + self._width / 2 - 2, self._y + self._height/2 - 2, \
+                    self._shoot_sensitivity*joy_input[2], self._shoot_sensitivity*joy_input[3], \
                     self._damage, self._color, self._ID))
 
     def _get_input(self):
-        return [self._joystick.get_axis(self._map[0]), \
+        return (self._joystick.get_axis(self._map[0]), \
                 self._joystick.get_axis(self._map[1]), \
                 self._joystick.get_axis(self._map[2]), \
                 self._joystick.get_axis(self._map[3]), \
-                self._joystick.get_button(self._map[4])]
+                self._joystick.get_button(self._map[4]))
 
     def update_health(self, damage):
         self._health += damage
@@ -165,9 +175,9 @@ class Player:
             self._y + (self._height - self._hitbox_size)/2, \
             self._hitbox_size, self._hitbox_size)
 
-    def update(self):
+    def update(self, proj_container):
         self._move()
-        self._shoot()
+        self._shoot(proj_container)
 
 class Boss:
     def __init__(self):
@@ -193,7 +203,7 @@ class Boss:
         self._y += self._y_speed
         pygame.draw.rect(screen, BLACK, [self._x, self._y, self._width, self._height], 2)
 
-    def _attack(self):
+    def _attack(self, proj_container):
         """
         """
         if time.time() - self._moves[0][0] > self._moves[0][1]:
@@ -202,8 +212,8 @@ class Boss:
             x = -1.0
             y = -1.0
             while(i < 20):
-                projs.append(Projectile(self._x + self._width / 2, self._y + self._height / 2, x*3, y*3, 10, BLACK, 0))
-                projs.append(Projectile(self._x + self._width / 2, self._y + self._height / 2, x*-3, y*3, 10, BLACK, 0))
+                proj_container.append(Projectile(self._x + self._width / 2, self._y + self._height / 2, x*3, y*3, 10, BLACK, 0))
+                proj_container.append(Projectile(self._x + self._width / 2, self._y + self._height / 2, x*-3, y*3, 10, BLACK, 0))
                 x += 0.1
                 y += 0.1
                 i += 1
@@ -213,8 +223,8 @@ class Boss:
             x = -1.0
             y =  0.0
             while(i < 20):
-                projs.append(Projectile(self._x + self._width / 2, self._y + self._height / 2, x*3, y*3, 10, BLACK, 0))
-                projs.append(Projectile(self._x + self._width / 2, self._y + self._height / 2, x*-3, y*3, 10, BLACK, 0))
+                proj_container.append(Projectile(self._x + self._width / 2, self._y + self._height / 2, x*3, y*3, 10, BLACK, 0))
+                proj_container.append(Projectile(self._x + self._width / 2, self._y + self._height / 2, x*-3, y*3, 10, BLACK, 0))
                 x += 0.1
                 y += 0.1
                 i += 1
@@ -225,8 +235,8 @@ class Boss:
             x = -1.0
             y =  0.0
             while(i < 20):
-                projs.append(Projectile(self._x + self._width / 2, self._y + self._height / 2, x*3, y*3, 10, BLACK, 0))
-                projs.append(Projectile(self._x + self._width / 2, self._y + self._height / 2, x*-3, y*3, 10, BLACK, 0))
+                proj_container.append(Projectile(self._x + self._width / 2, self._y + self._height / 2, x*3, y*3, 10, BLACK, 0))
+                proj_container.append(Projectile(self._x + self._width / 2, self._y + self._height / 2, x*-3, y*3, 10, BLACK, 0))
                 x += 0.1
                 y += 0.1
                 i += 1
@@ -246,9 +256,9 @@ class Boss:
             self._y + (self._height - self._hitbox_size)/2, \
             self._hitbox_size, self._hitbox_size)
 
-    def update(self):
+    def update(self, proj_container):
         self._move()
-        self._attack()
+        self._attack(proj_container)
 
     
 
@@ -287,6 +297,8 @@ for i in range(joystick_count):
 
     if (player.get_init == 0):
         players.remove(player)
+
+    player.map_joystick()
         
 # -------- Main Program Loop -----------
 while done==False:
@@ -302,10 +314,10 @@ while done==False:
     textPrint.print(screen, "Boss health: {}".format(boss.get_health()))
     
     for player in enumerate(players):
-        player[1].update()
+        player[1].update(projs)
         textPrint.print(screen, "Player {} health: {}".format(player[0] + 1, player[1].get_health()))
     
-    boss.update()
+    boss.update(projs)
 
     for proj in projs:
         if proj.on_screen():
