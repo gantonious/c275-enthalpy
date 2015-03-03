@@ -97,24 +97,27 @@ class Player:
         self._threshold = 0.08
         self._joystick = joystick # grabs this players joystick object
         joystick.init() # initializes joysticks
-        self._map = []
+        self._map = [0, 0, 0, 0, 0]
+        self._check_init()
 	
-    def get_init(self):
+    def _check_init(self):
         status = self._joystick.get_init()
 
-        if status == 0:
+        if status:
+            self._map_joystick()
+        else:
             self._joystick.quit()
 
-        return status
+    def get_init(self):
+        return self._joystick.get_init()
 
-    def map_joystick(self):
+    def _map_joystick(self):
         if self._joystick.get_name() == "Wireless Controller":
             self._map = [0, 1, 2, 3, 4]
         elif self._joystick.get_name() == "PLAYSTATION(R)3 Controller":
             self._map = [0, 1, 2, 3, 11]
         else:
             self._map = [0, 1, 2, 3, 11] # default mapping
-
 
     def _draw(self):
         pygame.draw.rect(screen, self._color, \
@@ -261,6 +264,9 @@ class Boss:
         self._attack(proj_container)
 
     
+def refresh_joysticks():
+    pygame.joystick.quit()
+    pygame.joystick.init()
 
 pygame.init()
  
@@ -298,8 +304,6 @@ for i in range(joystick_count):
     if (player.get_init == 0):
         players.remove(player)
 
-    player.map_joystick()
-        
 # -------- Main Program Loop -----------
 while done==False:
     # EVENT PROCESSING STEP
@@ -313,6 +317,7 @@ while done==False:
     textPrint.print(screen, "Number of projs: {}".format(len(projs)))
     textPrint.print(screen, "Boss health: {}".format(boss.get_health()))
     
+
     for player in enumerate(players):
         player[1].update(projs)
         textPrint.print(screen, "Player {} health: {}".format(player[0] + 1, player[1].get_health()))
