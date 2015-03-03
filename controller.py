@@ -116,14 +116,14 @@ class Player:
             self._x += self._sensitivity*joy_input[0]
             if self._x < 0:
                 self._x = 0
-            elif self._x + self._width > 500 - self._width:
+            elif self._x + self._width > 500:
                 self._x = 500 - self._width
 
         if abs(joy_input[1]) > self._threshold:
             self._y += self._sensitivity*joy_input[1]
             if self._y < 0:
                 self._y = 0
-            elif self._y + self._height > 700 - self._height:
+            elif self._y + self._height > 700:
                 self._y = 700 - self._height
 
         self._draw()
