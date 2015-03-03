@@ -84,17 +84,19 @@ class Player:
         """
         self._health = 100
         self._damage = 5
-        self._width = 20
-        self._height = 20
+        self._width = 30
+        self._height = 30
         self._x = 240
         self._y = 600
+        self._hitbox_size = 4
         self._ID = 1
         self._color = RED
-        self._sensitivity = 20
+        self._sensitivity = 3
+        self._slowdown = 1
         self._threshold = 0.08
         self._joystick = joystick # grabs this players joystick object
         joystick.init() # initializes joysticks
-        self._map = [0, 1, 2, 3] # maps joystick buttons, this mapping works with ps4 controllers
+        self._map = [0, 1, 2, 3, 11] # maps joystick buttons, this mapping works with ps4 controllers
 	
     def get_init(self):
         status = self._joystick.get_init()
@@ -105,7 +107,12 @@ class Player:
         return status
 
     def _draw(self):
-        pygame.draw.rect(screen, self._color, [self._x, self._y, self._width, self._height], 2)
+        pygame.draw.rect(screen, self._color, \
+            [self._x, self._y, self._width, self._height], 2)
+        pygame.draw.rect(screen, self._color, \
+            [self._x + (self._width - self._hitbox_size)/2, \
+            self._y + (self._height - self._hitbox_size)/2, \
+            self._hitbox_size, self._hitbox_size], 2)
 
     def _move(self):
         joy_input = self._get_input()
@@ -113,14 +120,14 @@ class Player:
         # number crunching, these magic numbers are the screen dimensions ill get rid of them soon
 
         if abs(joy_input[0]) > self._threshold:
-            self._x += self._sensitivity*joy_input[0]
+            self._x += (self._sensitivity - (self._slowdown*joy_input[4]))*joy_input[0]
             if self._x < 0:
                 self._x = 0
             elif self._x + self._width > 500:
                 self._x = 500 - self._width
 
         if abs(joy_input[1]) > self._threshold:
-            self._y += self._sensitivity*joy_input[1]
+            self._y += (self._sensitivity - (self._slowdown*joy_input[4]))*joy_input[1]
             if self._y < 0:
                 self._y = 0
             elif self._y + self._height > 700:
@@ -141,7 +148,8 @@ class Player:
         return [self._joystick.get_axis(self._map[0]), \
                 self._joystick.get_axis(self._map[1]), \
                 self._joystick.get_axis(self._map[2]), \
-                self._joystick.get_axis(self._map[3])]
+                self._joystick.get_axis(self._map[3]), \
+                self._joystick.get_button(self._map[4])]
 
     def update_health(self, damage):
         self._health += damage
@@ -153,7 +161,9 @@ class Player:
         return self._ID
 
     def get_coords(self):
-        return (self._x, self._y, self._width, self._height)
+        return (self._x + (self._width - self._hitbox_size)/2, \
+            self._y + (self._height - self._hitbox_size)/2, \
+            self._hitbox_size, self._hitbox_size)
 
     def update(self):
         self._move()
@@ -166,6 +176,7 @@ class Boss:
         self._height = 40
         self._x = 200
         self._y = 40
+        self._hitbox_size = 40
         self._x_speed = 30
         self._y_speed = 0
         self._state = (0, 0)
@@ -231,7 +242,9 @@ class Boss:
         return self._ID
 
     def get_coords(self):
-        return (self._x, self._y, self._width, self._height)
+        return (self._x + (self._width - self._hitbox_size)/2, \
+            self._y + (self._height - self._hitbox_size)/2, \
+            self._hitbox_size, self._hitbox_size)
 
     def update(self):
         self._move()
