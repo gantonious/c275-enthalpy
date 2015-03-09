@@ -51,4 +51,20 @@ class StraightProjectile(Projectile):
         self._y += self._y_move
         pygame.draw.rect(screen, self._color, [self._x, self._y, self._width, self._height], 2)
 
+class FallingProjectile(Projectile):
+    def __init__(self, ID, x, y, x_move, gravity):
+        super().__init__(ID, x, y)
+        self._x_move = x_move
+        self._original_y = y
+        self._gravity = gravity
+
+    def _move(self, screen, dt):
+        pass
+
+
+
+
+
+
+
 

@@ -97,6 +97,14 @@ class Player(Entity):
         self._move(screen)
         self._shoot(projs)
 
+# class Enemy(Entity):
+#     def __init__(self, ID):
+#         super().__init__(ID)
+
+#     def _move(self, screen):
+#         screen_size = screen.get_size()
+#         # do some movement stuff
+
 class Boss(Entity):
     def __init__(self, ID, x_speed, y_speed):
         super().__init__(ID)
@@ -118,6 +126,7 @@ class Boss(Entity):
         """
         """
         proj = StraightProjectile(self._ID, self._x, self._y, 0, 5)
+        # proj = FallingProjectile(self._ID, self._x, self._y, 2, 1.01)
         proj.health = 5
         proj.width = 5
         proj.height = 5
