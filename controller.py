@@ -35,7 +35,6 @@ class TextPrint:
     def unindent(self):
         self.x -= 10
 
-# <<<<<<< Updated upstream
 # class Projectile:
 #     def __init__(self, x, y, x_speed, y_speed, damage, color, ID):
 #         self._width = 5
@@ -267,11 +266,8 @@ class TextPrint:
 #     def update(self, proj_container):
 #         self._move()
 #         self._attack(proj_container)
-# =======
 
-# >>>>>>> Stashed changes
 
-    
 def refresh_joysticks():
     pygame.joystick.quit()
     pygame.joystick.init()
@@ -309,7 +305,7 @@ for i in range(joystick_count):
     players.append(player)
 
     if (player.get_init == 0):
-        players.remove(player)
+        players.remove(player) # joystick init failed, drop player
 
 # -------- Main Program Loop -----------
 while done==False:

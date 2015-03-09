@@ -11,19 +11,27 @@ class Player(Entity):
     def __init__(self, joystick, ID, health, width, height, x, y, hitbox, damage, color):
         super().__init__(ID, health, width, height, x, y, hitbox, damage, color)
         self._sensitivity = 3 # i think these two will always be true
+        self._shoot_sensitivity = 20
         self._slowdown = 1
         self._threshold = 0.08
         self._joystick = joystick # grabs this players joystick object
+        self._map = [] # key bindings
         joystick.init() # initializes joysticks
-        self._map = [0, 1, 2, 3, 11] # maps joystick buttons, this mapping works with ps4 controllers
+        self._check_init() # makes sure joystick initialized succesfully
     
-    def get_init(self):
-        status = self._joystick.get_init()
-
-        if status == 0:
+    def _check_init(self):
+        if self._joystick.get_init():
+            self._map_joystick() # joystick is good lets map it
+        else:
             self._joystick.quit()
 
-        return status
+    def _map_joystick(self):
+        if self._joystick.get_name() == "Wireless Controller":
+            self._map = [0, 1, 2, 3, 4] # PS4 controller
+        elif self._joystick.get_name() == "PLAYSTATION(R)3 Controller":
+            self._map = [0, 1, 2, 3, 11] # PS3 controller
+        else:
+            self._map = [0, 1, 2, 3, 11] # default
 
     def _draw(self, screen):
         screen_size = screen.get_size()
@@ -62,9 +70,9 @@ class Player(Entity):
         joy_input = self._get_input()
 
         if abs(joy_input[2]) > self._threshold or abs(joy_input[3]) > self._threshold:
-            projs.append(Projectile(self._ID, self._damage, 4, 4, self._x + self._width / 2 - 2, \
-                    self._y + self._height/2 - 2, self._sensitivity*joy_input[2], \
-                    self._sensitivity*joy_input[3], self._damage, self._color))
+            projs.append(StraightProjectile(self._ID, self._damage, 4, 4, self._x + self._width / 2 - 2, \
+                    self._y + self._height/2 - 2, self._shoot_sensitivity*joy_input[2], \
+                    self._shoot_sensitivity*joy_input[3], self._damage, self._color))
 
     def _get_input(self):
         return [self._joystick.get_axis(self._map[0]), \
@@ -72,6 +80,9 @@ class Player(Entity):
                 self._joystick.get_axis(self._map[2]), \
                 self._joystick.get_axis(self._map[3]), \
                 self._joystick.get_button(self._map[4])]
+
+    def get_init(self):
+        return self._joystick.get_init()
 
     def update(self, projs, screen):
         screen_size = screen.get_size()
@@ -99,7 +110,7 @@ class Boss(Entity):
         """
         """
         if time.time() - self._moves[0][0] > self._moves[0][1]:
-            self._moves[0] = (.5, time.time())
+            self._moves[0] = (4, time.time())
             i = 0
             x = -1.0
             y = -1.0
@@ -110,7 +121,7 @@ class Boss(Entity):
                 y += 0.1
                 i += 1
         if time.time() - self._moves[1][0] > self._moves[1][1]:
-            self._moves[1] = (2.5, time.time())
+            self._moves[1] = (4, time.time())
             i = 0
             x = -1.0
             y =  0.0
@@ -122,7 +133,7 @@ class Boss(Entity):
                 i += 1
 
         if time.time() - self._moves[2][0] > self._moves[2][1]:
-            self._moves[2] = (0.2, time.time())
+            self._moves[2] = (4, time.time())
             i = 0
             x = -1.0
             y =  0.0
