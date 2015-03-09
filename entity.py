@@ -1,31 +1,93 @@
+# Define some colors
+BLACK    = (   0,   0,   0)
+WHITE    = ( 255, 255, 255)
+RED      = ( 255,   0,   0)
+
 class Entity:
     """
     projectiles, players, bosses, (enemies)
     """
-    def __init__(self, ID, health, width, height, x, y, hitbox, damage, color):
+    def __init__(self, ID, damage=5, color=BLACK):
+        # stuff that needs to be set: health, size, location, hitbox
         self._ID = ID
-        self._health = health
-        self._width = width
-        self._height = height
-        self._x = x
-        self._y = y
-        self._hitbox_size = hitbox
         self._damage = damage
         self._color = color
+
+    @property
+    def health(self):
+        return self._health
+
+    @health.setter
+    def health(self, health):
+        self._health = health
 
     def update_health(self, damage):
         self._health += damage
 
-    def get_health(self):
-        return self._health
-
-    def get_ID(self):
+    @property
+    def ID(self):
         return self._ID
 
+    @property
+    def x(self):
+        return self._x
+
+    @x.setter
+    def x(self, x):
+        self._x = x
+
+    @property
+    def y(self):
+        return self._y
+
+    @y.setter
+    def y(self, y):
+        self._y = y
+
+    @property
+    def width(self):
+        return self._width
+
+    @width.setter
+    def width(self, width):
+        self._width = width
+
+    @property
+    def height(self):
+        return self._height
+
+    @height.setter
+    def height(self, height):
+        self._height = height
+        
+    @property
+    def hitbox(self):
+        return self._hitbox
+    @hitbox.setter
+    def hitbox(self, hitbox):
+        self._hitbox = hitbox
+
+    @property
+    def color(self):
+        return self._color
+    @color.setter
+    def color(self, color):
+        self._color = color
+    
+    
+    def get_location(self):
+        return (self._x, self._y)
+
+    def set_location(self, location):
+        # pass a tuple (x, y)
+        self._x = location[0]
+        self._y = location[1]
+
     def get_coords(self):
-        return (self._x + (self._width - self._hitbox_size)/2, \
-            self._y + (self._height - self._hitbox_size)/2, \
-            self._hitbox_size, self._hitbox_size)
+        # returns hitbox area
+        return (self._x + (self._width - self._hitbox)/2, \
+            self._y + (self._height - self._hitbox)/2, \
+            self._hitbox, self._hitbox)
 
     def collide(self, target):
         if target.get_ID() == self._ID:

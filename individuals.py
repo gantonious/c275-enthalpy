@@ -8,8 +8,9 @@ WHITE    = ( 255, 255, 255)
 RED      = ( 255,   0,   0)
 
 class Player(Entity):
-    def __init__(self, joystick, ID, health, width, height, x, y, hitbox, damage, color):
-        super().__init__(ID, health, width, height, x, y, hitbox, damage, color)
+    def __init__(self, ID, joystick, damage=5, color=RED):
+        super().__init__(ID, damage, color)
+        self._hitbox = 5
         self._sensitivity = 3 # i think these two will always be true
         self._shoot_sensitivity = 20
         self._slowdown = 1
@@ -39,9 +40,9 @@ class Player(Entity):
         pygame.draw.rect(screen, self._color, \
             [self._x, self._y, self._width, self._height], 2)
         pygame.draw.rect(screen, self._color, \
-            [self._x + (self._width - self._hitbox_size)/2, \
-            self._y + (self._height - self._hitbox_size)/2, \
-            self._hitbox_size, self._hitbox_size], 2)
+            [self._x + (self._width - self._hitbox)/2, \
+            self._y + (self._height - self._hitbox)/2, \
+            self._hitbox, self._hitbox], 2)
 
     def _move(self, screen):
         joy_input = self._get_input()
@@ -70,9 +71,16 @@ class Player(Entity):
         joy_input = self._get_input()
 
         if abs(joy_input[2]) > self._threshold or abs(joy_input[3]) > self._threshold:
-            projs.append(StraightProjectile(self._ID, self._damage, 4, 4, self._x + self._width / 2 - 2, \
-                    self._y + self._height/2 - 2, self._shoot_sensitivity*joy_input[2], \
-                    self._shoot_sensitivity*joy_input[3], self._damage, self._color))
+            # projs.append(StraightProjectile(self._ID, self._damage, 4, 4, self._x + self._width / 2 - 2, \
+            #         self._y + self._height/2 - 2, self._shoot_sensitivity*joy_input[2], \
+            #         self._shoot_sensitivity*joy_input[3], self._damage, self._color))
+            proj = StraightProjectile(self._ID, self._x, self._y, \
+                self._shoot_sensitivity*joy_input[2], self._shoot_sensitivity*joy_input[3])
+            proj.health = 5
+            proj.width = 5
+            proj.height = 5
+            proj.color = self._color
+            projs.append(proj)
 
     def _get_input(self):
         return [self._joystick.get_axis(self._map[0]), \
@@ -90,8 +98,8 @@ class Player(Entity):
         self._shoot(projs)
 
 class Boss(Entity):
-    def __init__(self, ID, health, width, height, x, y, x_speed, y_speed, damage, color):
-        super().__init__(ID, health, width, height, x, y, width, damage, color)
+    def __init__(self, ID, x_speed, y_speed):
+        super().__init__(ID)
         self._x_speed = x_speed
         self._y_speed = y_speed
         self._moves = [(0, 0), (2, 0), (0, 0)] # tuples containg move and countdown
@@ -109,55 +117,11 @@ class Boss(Entity):
     def _attack(self, projs):
         """
         """
-        if time.time() - self._moves[0][0] > self._moves[0][1]:
-            self._moves[0] = (4, time.time())
-            i = 0
-            x = -1.0
-            y = -1.0
-            while(i < 20):
-                projs.append(StraightProjectile(self._ID, self._damage, 5, 5, self._x + self._width / 2, self._y + self._height / 2, x*3, y*3, 10, BLACK))
-                projs.append(StraightProjectile(self._ID, self._damage, 5, 5, self._x + self._width / 2, self._y + self._height / 2, x*-3, y*3, 10, BLACK))
-                x += 0.1
-                y += 0.1
-                i += 1
-        if time.time() - self._moves[1][0] > self._moves[1][1]:
-            self._moves[1] = (4, time.time())
-            i = 0
-            x = -1.0
-            y =  0.0
-            while(i < 20):
-                projs.append(StraightProjectile(self._ID, self._damage, 5, 5, self._x + self._width / 2, self._y + self._height / 2, x*3, y*3, 10, BLACK))
-                projs.append(StraightProjectile(self._ID, self._damage, 5, 5, self._x + self._width / 2, self._y + self._height / 2, x*-3, y*3, 10, BLACK))
-                x += 0.1
-                y += 0.1
-                i += 1
-
-        if time.time() - self._moves[2][0] > self._moves[2][1]:
-            self._moves[2] = (4, time.time())
-            i = 0
-            x = -1.0
-            y =  0.0
-            while(i < 20):
-                projs.append(StraightProjectile(self._ID, self._damage, 5, 5, self._x + self._width / 2, self._y + self._height / 2, x*3, y*3, 10, BLACK))
-                projs.append(StraightProjectile(self._ID, self._damage, 5, 5, self._x + self._width / 2, self._y + self._height / 2, x*-3, y*3, 10, BLACK))
-                x += 0.1
-                y += 0.1
-                i += 1
-
-
-    def update_health(self, damage):
-        self._health += damage
-
-    def get_health(self):
-        return self._health
-
-    def get_ID(self):
-        return self._ID
-
-    def get_coords(self):
-        return (self._x + (self._width - self._hitbox_size)/2, \
-            self._y + (self._height - self._hitbox_size)/2, \
-            self._hitbox_size, self._hitbox_size)
+        proj = StraightProjectile(self._ID, self._x, self._y, 0, 5)
+        proj.health = 5
+        proj.width = 5
+        proj.height = 5
+        projs.append(proj)
 
     def update(self, projs, screen):
         self._move(screen)

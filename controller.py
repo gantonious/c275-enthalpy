@@ -283,7 +283,13 @@ done = False
 
 # Used to manage how fast the screen updates
 clock = pygame.time.Clock()
-boss = Boss(2, 1000, 40, 40, 200, 40, 30, 0, 5, BLACK)
+boss = Boss(2, 30, 0)
+boss.health = 1000
+boss.width = 40
+boss.height = 40
+boss.x = 200
+boss.y = 40
+boss.hitbox = 40
 
 # Initialize the joysticks
 pygame.joystick.init()
@@ -301,7 +307,18 @@ textPrint.indent()
 # IDs 0 and 1 are reserved for players for the time being
 for i in range(joystick_count):
     joystick = pygame.joystick.Joystick(i)
-    player = Player(joystick, i, 100, 30, 30, 240, 600, 4, 5, RED)
+    player = Player(i, joystick)
+    # 100, 30, 30, 240, 600, 4, 5, RED
+    player.health = 100
+    player.width = 30
+    player.height = 30
+    player.hitbox = 5
+    if player.ID == 0:
+        player.x = 400
+        player.y = 600
+    if player.ID == 1:
+        player.x = 800
+        player.y = 600
     players.append(player)
 
     if (player.get_init == 0):
@@ -318,12 +335,12 @@ while done==False:
     textPrint.reset()
 
     textPrint.print(screen, "Number of projs: {}".format(len(projs)))
-    textPrint.print(screen, "Boss health: {}".format(boss.get_health()))
+    textPrint.print(screen, "Boss health: {}".format(boss.health))
     
 
     for player in enumerate(players):
         player[1].update(projs, screen)
-        textPrint.print(screen, "Player {} health: {}".format(player[0] + 1, player[1].get_health()))
+        textPrint.print(screen, "Player {} health: {}".format(player[0] + 1, player[1].health))
     
     boss.update(projs, screen)
 

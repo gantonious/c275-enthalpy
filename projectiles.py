@@ -8,15 +8,18 @@ RED      = ( 255,   0,   0)
 
 class Projectile(Entity):
 
-    def __init__(self, ID, health, width, height, x, y, damage, color):
-        super().__init__(ID, health, width, height, x, y, width, damage, color)
+    def __init__(self, ID, x, y):
+        # stuff that needs to be set: health, size
+        super().__init__(ID)
+        self._x = x
+        self._y = y
 
     def _move(self, screen):
         # python pls don't be mad
         pass
 
     def collide(self, target):
-        if target.get_ID() == self._ID:
+        if target.ID == self._ID:
             return 0
         coords = target.get_coords()
         if (self._x + self._width > coords[0] and \
@@ -38,8 +41,8 @@ class Projectile(Entity):
         self._move(screen)
 
 class StraightProjectile(Projectile):
-    def __init__(self, ID, health, width, height, x, y, x_move, y_move, damage, color):
-        super().__init__(ID, health, width, height, x, y, damage, color)
+    def __init__(self, ID, x, y, x_move, y_move):
+        super().__init__(ID, x, y)
         self._x_move = x_move
         self._y_move = y_move
 
