@@ -1,45 +1,11 @@
 import pygame, time
 from entity import *
+from projectiles import *
 
 # Define some colors
 BLACK    = (   0,   0,   0)
 WHITE    = ( 255, 255, 255)
 RED      = ( 255,   0,   0)
-
-class Projectile(Entity):
-
-    def __init__(self, ID, health, width, height, x, y, x_speed, y_speed, damage, color):
-        super().__init__(ID, health, width, height, x, y, width, damage, color)
-        self._x_speed = x_speed
-        self._y_speed = y_speed
-
-    def _move(self, screen):
-        self._x += self._x_speed
-        self._y += self._y_speed
-        pygame.draw.rect(screen, self._color, [self._x, self._y, self._width, self._height], 2)
-
-    def collide(self, target):
-        if target.get_ID() == self._ID:
-            return 0
-        coords = target.get_coords()
-        if (self._x + self._width > coords[0] and \
-            self._x < coords[0] + coords[2] and \
-            self._y + self._height > coords[1] and \
-            self._y < coords[1] + coords[3]):
-            self._health -= target._damage
-            target.update_health(-1*self._damage)
-            return 1
-        return 0
-
-    def on_screen(self, screen):
-        screen_size = screen.get_size()
-        print(self._health)
-        return self._x + self._width > 0 and self._x < screen_size[0] and \
-            self._y + self._height > 0 and self._y < screen_size[1] and \
-            self._health > 0 and (int(self._x_speed) != 0 or int(self._y_speed) != 0)
-
-    def update(self, screen):
-        self._move(screen)
 
 class Player(Entity):
     def __init__(self, joystick, ID, health, width, height, x, y, hitbox, damage, color):
@@ -138,8 +104,8 @@ class Boss(Entity):
             x = -1.0
             y = -1.0
             while(i < 20):
-                projs.append(Projectile(self._ID, self._damage, 5, 5, self._x + self._width / 2, self._y + self._height / 2, x*3, y*3, 10, BLACK))
-                projs.append(Projectile(self._ID, self._damage, 5, 5, self._x + self._width / 2, self._y + self._height / 2, x*-3, y*3, 10, BLACK))
+                projs.append(StraightProjectile(self._ID, self._damage, 5, 5, self._x + self._width / 2, self._y + self._height / 2, x*3, y*3, 10, BLACK))
+                projs.append(StraightProjectile(self._ID, self._damage, 5, 5, self._x + self._width / 2, self._y + self._height / 2, x*-3, y*3, 10, BLACK))
                 x += 0.1
                 y += 0.1
                 i += 1
@@ -149,8 +115,8 @@ class Boss(Entity):
             x = -1.0
             y =  0.0
             while(i < 20):
-                projs.append(Projectile(self._ID, self._damage, 5, 5, self._x + self._width / 2, self._y + self._height / 2, x*3, y*3, 10, BLACK))
-                projs.append(Projectile(self._ID, self._damage, 5, 5, self._x + self._width / 2, self._y + self._height / 2, x*-3, y*3, 10, BLACK))
+                projs.append(StraightProjectile(self._ID, self._damage, 5, 5, self._x + self._width / 2, self._y + self._height / 2, x*3, y*3, 10, BLACK))
+                projs.append(StraightProjectile(self._ID, self._damage, 5, 5, self._x + self._width / 2, self._y + self._height / 2, x*-3, y*3, 10, BLACK))
                 x += 0.1
                 y += 0.1
                 i += 1
@@ -161,8 +127,8 @@ class Boss(Entity):
             x = -1.0
             y =  0.0
             while(i < 20):
-                projs.append(Projectile(self._ID, self._damage, 5, 5, self._x + self._width / 2, self._y + self._height / 2, x*3, y*3, 10, BLACK))
-                projs.append(Projectile(self._ID, self._damage, 5, 5, self._x + self._width / 2, self._y + self._height / 2, x*-3, y*3, 10, BLACK))
+                projs.append(StraightProjectile(self._ID, self._damage, 5, 5, self._x + self._width / 2, self._y + self._height / 2, x*3, y*3, 10, BLACK))
+                projs.append(StraightProjectile(self._ID, self._damage, 5, 5, self._x + self._width / 2, self._y + self._height / 2, x*-3, y*3, 10, BLACK))
                 x += 0.1
                 y += 0.1
                 i += 1
