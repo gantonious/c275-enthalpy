@@ -11,9 +11,9 @@ class Player(Entity):
     def __init__(self, ID, joystick, damage=5, color=RED):
         super().__init__(ID, damage, color)
         self._hitbox = 5
-        self._sensitivity = 3 # i think these two will always be true
+        self._sensitivity = 25 # in px/s
         self._shoot_sensitivity = 20
-        self._slowdown = 1
+        self._slowdown = 10
         self._threshold = 0.08
         self._joystick = joystick # grabs this players joystick object
         self._map = [] # key bindings
@@ -44,21 +44,19 @@ class Player(Entity):
             self._y + (self._height - self._hitbox)/2, \
             self._hitbox, self._hitbox], 2)
 
-    def _move(self, screen):
+    def _move(self, screen, dt):
         joy_input = self._get_input()
         screen_size = screen.get_size()
 
-        # number crunching, these magic numbers are the screen dimensions ill get rid of them soon
-
         if abs(joy_input[0]) > self._threshold:
-            self._x += (self._sensitivity - (self._slowdown*joy_input[4]))*joy_input[0]
+            self._x += (self._sensitivity - (self._slowdown*joy_input[4]))*joy_input[0] * 20 * dt
             if self._x < 0:
                 self._x = 0
             elif self._x + self._width > screen_size[0]:
                 self._x = screen_size[0] - self._width
 
         if abs(joy_input[1]) > self._threshold:
-            self._y += (self._sensitivity - (self._slowdown*joy_input[4]))*joy_input[1]
+            self._y += (self._sensitivity - (self._slowdown*joy_input[4]))*joy_input[1] * 20 * dt
             if self._y < 0:
                 self._y = 0
             elif self._y + self._height > screen_size[1]:
@@ -75,7 +73,7 @@ class Player(Entity):
             #         self._y + self._height/2 - 2, self._shoot_sensitivity*joy_input[2], \
             #         self._shoot_sensitivity*joy_input[3], self._damage, self._color))
             proj = StraightProjectile(self._ID, self._x, self._y, \
-                self._shoot_sensitivity*joy_input[2], self._shoot_sensitivity*joy_input[3])
+                self._shoot_sensitivity*joy_input[2] * 100, self._shoot_sensitivity*joy_input[3] * 100)
             proj.health = 5
             proj.width = 5
             proj.height = 5
@@ -92,9 +90,9 @@ class Player(Entity):
     def get_init(self):
         return self._joystick.get_init()
 
-    def update(self, projs, screen):
+    def update(self, projs, screen, dt):
         screen_size = screen.get_size()
-        self._move(screen)
+        self._move(screen, dt)
         self._shoot(projs)
 
 # class Enemy(Entity):
@@ -108,30 +106,34 @@ class Player(Entity):
 class Boss(Entity):
     def __init__(self, ID, x_speed, y_speed):
         super().__init__(ID)
-        self._x_speed = x_speed
+        self._x_speed = x_speed # in px/s
         self._y_speed = y_speed
+        self._x_init = self._x_speed
+        self._direction = 1
         self._moves = [(0, 0), (2, 0), (0, 0)] # tuples containg move and countdown
 
-    def _move(self, screen):
+    def _move(self, screen, dt):
         screen_size = screen.get_size()
         if self._x < 0:
-            self._x_speed = 30
-        elif self._x > screen_size[0]:
-            self._x_speed = -30
-        self._x += self._x_speed
-        self._y += self._y_speed
+            self._x_speed = self._x_init
+            self._direction = 1
+        if self._x > screen_size[0]:
+            self._x_speed = -self._x_init
+            self._direction = -1
+        self._x += self._x_speed * dt
+        self._y += self._y_speed * dt
         pygame.draw.rect(screen, self._color, [self._x, self._y, self._width, self._height], 2)
 
     def _attack(self, projs):
         """
         """
-        proj = StraightProjectile(self._ID, self._x, self._y, 0, 5)
-        # proj = FallingProjectile(self._ID, self._x, self._y, 2, 1.01)
+        # proj = StraightProjectile(self._ID, self._x, self._y, 0, 200)
+        proj = FallingProjectile(self._ID, self._x, self._y, 50, 100, self._direction)
         proj.health = 5
         proj.width = 5
         proj.height = 5
         projs.append(proj)
 
-    def update(self, projs, screen):
-        self._move(screen)
+    def update(self, projs, screen, dt):
+        self._move(screen, dt)
         self._attack(projs)

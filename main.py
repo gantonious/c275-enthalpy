@@ -1,6 +1,5 @@
 import pygame
 from individuals import *
-import time
 from threading import Thread
 
 # Define some colors
@@ -50,7 +49,7 @@ done = False
 
 # Used to manage how fast the screen updates
 clock = pygame.time.Clock()
-boss = Boss(2, 30, 0)
+boss = Boss(2, 1000, 0)
 boss.health = 1000
 boss.width = 40
 boss.height = 40
@@ -91,8 +90,14 @@ for i in range(joystick_count):
     if (player.get_init == 0):
         players.remove(player) # joystick init failed, drop player
 
+last_time = pygame.time.get_ticks()
+
 # -------- Main Program Loop -----------
 while done==False:
+    now = pygame.time.get_ticks()
+    dt = (now - last_time) / 1000 # in seconds
+    # print(dt)
+
     # EVENT PROCESSING STEP
     for event in pygame.event.get(): # User did something
         if event.type == pygame.QUIT: # If user clicked close
@@ -106,15 +111,14 @@ while done==False:
     
 
     for player in enumerate(players):
-        player[1].update(projs, screen)
+        player[1].update(projs, screen, dt)
         textPrint.print(screen, "Player {} health: {}".format(player[0] + 1, player[1].health))
     
-    boss.update(projs, screen)
-
+    boss.update(projs, screen, dt)
 
     for proj in projs:
         if proj.on_screen(screen):
-            proj.update(screen)
+            proj.update(screen, dt)
             proj.collide(boss)
             for player in players:
                 proj.collide(player)
@@ -127,6 +131,8 @@ while done==False:
     
     # Limit to 120 frames per second
     clock.tick(120)
+
+    last_time = now
     
 # Close the window and quit.
 # If you forget this line, the program will 'hang'
