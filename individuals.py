@@ -1,6 +1,7 @@
 import pygame, time
 from entity import *
 from projectiles import *
+from patterns import *
 
 # Define some colors
 BLACK    = (   0,   0,   0)
@@ -95,13 +96,46 @@ class Player(Entity):
         self._move(screen, dt)
         self._shoot(projs)
 
-# class Enemy(Entity):
-#     def __init__(self, ID):
-#         super().__init__(ID)
+class Enemy(Entity):
+    def __init__(self, ID, x_speed, y_speed, pattern):
+        super().__init__(ID)
+        self._pattern = pattern
+        self._x_speed = x_speed
+        self._y_speed = y_speed
 
-#     def _move(self, screen):
-#         screen_size = screen.get_size()
-#         # do some movement stuff
+    def _draw(self, screen):
+        screen_size = screen.get_size()
+
+        pygame.draw.rect(screen, self._color, \
+            [self._x, self._y, self._width, self._height], 2)
+        pygame.draw.rect(screen, self._color, \
+            [self._x + (self._width - self._hitbox)/2, \
+            self._y + (self._height - self._hitbox)/2, \
+            self._hitbox, self._hitbox], 2)
+
+    # an enemy's x, y, x_speed, y_speed must be set before moving it
+    # so that pattern knows what to do
+    def _move(self, screen, dt):
+        # pattern(x_speed, y_speed, other stuff) returns x_move, y_move
+        screen_size = screen.get_size()
+        self._x_speed, self._y_speed = self._pattern(self._x_speed, self._y_speed, 0.95)
+        self._x += self._x_speed * dt
+        self._y += self._y_speed * dt
+
+        self._draw(screen)
+
+    def _attack(self, projs):
+        if self._x_speed == 0 and self._y_speed == 0:
+            proj = StraightProjectile(self._ID, self._x, self._y, 0, 200)
+            proj.health = 5
+            proj.width = 5
+            proj.height = 5
+            projs.append(proj)
+
+
+    def update(self, projs, screen, dt):
+        self._move(screen, dt)
+        self._attack(projs)
 
 class Boss(Entity):
     def __init__(self, ID, x_speed, y_speed):

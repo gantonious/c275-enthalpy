@@ -1,4 +1,4 @@
-import pygame
+import pygame, sys
 from individuals import *
 from threading import Thread
 
@@ -8,7 +8,7 @@ WHITE    = ( 255, 255, 255)
 RED      = ( 255,   0,   0)
 
 # Set the width and height of the screen [width,height]
-SCREEN_SIZE = [1200, 800]
+# SCREEN_SIZE = [1024, 768]
 
 # This is a simple class that will help us print to the screen
 # It has nothing to do with the joysticks, just outputing the
@@ -38,6 +38,12 @@ def refresh_joysticks():
     pygame.joystick.quit()
     pygame.joystick.init()
 
+argv = sys.argv[1:]
+if len(argv) > 1:
+    SCREEN_SIZE = (int(argv[0]), int(argv[1]))
+else:
+    SCREEN_SIZE = (800, 600)
+
 pygame.init()
  
 screen = pygame.display.set_mode(SCREEN_SIZE)
@@ -49,6 +55,8 @@ done = False
 
 # Used to manage how fast the screen updates
 clock = pygame.time.Clock()
+
+# these will eventually be automated
 boss = Boss(2, 1000, 0)
 boss.health = 1000
 boss.width = 40
@@ -56,6 +64,14 @@ boss.height = 40
 boss.x = 200
 boss.y = 40
 boss.hitbox = 40
+
+enemy = Enemy(2, 0, 300, fade_in)
+enemy.health = 100
+enemy.width = 20
+enemy.height = 20
+enemy.x = 400
+enemy.y = -50
+enemy.hitbox = 20
 
 # Initialize the joysticks
 pygame.joystick.init()
@@ -115,6 +131,7 @@ while done==False:
         textPrint.print(screen, "Player {} health: {}".format(player[0] + 1, player[1].health))
     
     boss.update(projs, screen, dt)
+    enemy.update(projs, screen, dt)
 
     for proj in projs:
         if proj.on_screen(screen):
