@@ -114,7 +114,6 @@ class Enemy(Entity):
     # so that pattern knows what to do
     def _move(self, screen, dt):
         screen_size = screen.get_size()
-        print((self._pattern))
         self._x_speed, self._y_speed = self._pattern(self, screen, 200)
         self._x += self._x_speed * dt
         self._y += self._y_speed * dt
