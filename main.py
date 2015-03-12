@@ -65,12 +65,12 @@ boss.x = 200
 boss.y = 40
 boss.hitbox = 40
 
-enemy = Enemy(2, 0, 300, fade_in)
+enemy = Enemy(2, 0, 1000, border)
 enemy.health = 100
 enemy.width = 20
 enemy.height = 20
-enemy.x = 400
-enemy.y = -50
+enemy.x = 600
+enemy.y = 200
 enemy.hitbox = 20
 
 # Initialize the joysticks

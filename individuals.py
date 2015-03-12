@@ -70,9 +70,6 @@ class Player(Entity):
         joy_input = self._get_input()
 
         if abs(joy_input[2]) > self._threshold or abs(joy_input[3]) > self._threshold:
-            # projs.append(StraightProjectile(self._ID, self._damage, 4, 4, self._x + self._width / 2 - 2, \
-            #         self._y + self._height/2 - 2, self._shoot_sensitivity*joy_input[2], \
-            #         self._shoot_sensitivity*joy_input[3], self._damage, self._color))
             proj = StraightProjectile(self._ID, self._x, self._y, \
                 self._shoot_sensitivity*joy_input[2] * 100, self._shoot_sensitivity*joy_input[3] * 100)
             proj.health = 5
@@ -116,9 +113,9 @@ class Enemy(Entity):
     # an enemy's x, y, x_speed, y_speed must be set before moving it
     # so that pattern knows what to do
     def _move(self, screen, dt):
-        # pattern(x_speed, y_speed, other stuff) returns x_move, y_move
         screen_size = screen.get_size()
-        self._x_speed, self._y_speed = self._pattern(self._x_speed, self._y_speed, 0.95)
+        print((self._pattern))
+        self._x_speed, self._y_speed = self._pattern(self, screen, 200)
         self._x += self._x_speed * dt
         self._y += self._y_speed * dt
 
@@ -126,12 +123,27 @@ class Enemy(Entity):
 
     def _attack(self, projs):
         if self._x_speed == 0 and self._y_speed == 0:
-            proj = StraightProjectile(self._ID, self._x, self._y, 0, 200)
+            proj = StraightProjectile(self._ID, self._x + self._width/2 - 2, self._y + self._height/2 - 2, 0, 200)
             proj.health = 5
             proj.width = 5
             proj.height = 5
             projs.append(proj)
 
+    @property
+    def x_speed(self):
+        return self._x_speed
+
+    @x_speed.setter
+    def x_speed(self, x_speed):
+        self._x_speed = x_speed
+
+    @property
+    def y_speed(self):
+        return self._y_speed
+
+    @y_speed.setter
+    def y_speed(self, y_speed):
+        self._y_speed = y_speed
 
     def update(self, projs, screen, dt):
         self._move(screen, dt)
@@ -162,7 +174,7 @@ class Boss(Entity):
         """
         """
         # proj = StraightProjectile(self._ID, self._x, self._y, 0, 200)
-        proj = FallingProjectile(self._ID, self._x, self._y, 50, 100, self._direction)
+        proj = FallingProjectile(self._ID, self._x + self._width/2, self._y + self._height/2, 50, 100, self._direction)
         proj.health = 5
         proj.width = 5
         proj.height = 5
