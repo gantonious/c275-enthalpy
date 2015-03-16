@@ -35,15 +35,13 @@ class Player(Entity):
         else:
             self._map = [0, 1, 2, 3, 11] # default
 
-    def _draw(self, screen):
-        screen_size = screen.get_size()
+    # def _draw(self, screen):
+    #     screen_size = screen.get_size()
 
-        pygame.draw.rect(screen, self._color, \
-            [self._x, self._y, self._width, self._height], 2)
-        pygame.draw.rect(screen, self._color, \
-            [self._x + (self._width - self._hitbox)/2, \
-            self._y + (self._height - self._hitbox)/2, \
-            self._hitbox, self._hitbox], 2)
+    #     pygame.draw.rect(screen, self._color, \
+    #         [self._x + (self._width - self._hitbox)/2, \
+    #         self._y + (self._height - self._hitbox)/2, \
+    #         self._hitbox, self._hitbox], 2)
 
     def _move(self, screen, dt):
         joy_input = self._get_input()
@@ -63,7 +61,7 @@ class Player(Entity):
             elif self._y + self._height > screen_size[1]:
                 self._y = screen_size[1] - self._height
 
-        self._draw(screen)
+        #self._draw(screen)
 
 
     def _shoot(self, projs):
@@ -100,15 +98,15 @@ class Enemy(Entity):
         self._x_speed = x_speed
         self._y_speed = y_speed
 
-    def _draw(self, screen):
-        screen_size = screen.get_size()
+    # def _draw(self, screen):
+    #     screen_size = screen.get_size()
 
-        pygame.draw.rect(screen, self._color, \
-            [self._x, self._y, self._width, self._height], 2)
-        pygame.draw.rect(screen, self._color, \
-            [self._x + (self._width - self._hitbox)/2, \
-            self._y + (self._height - self._hitbox)/2, \
-            self._hitbox, self._hitbox], 2)
+    #     pygame.draw.rect(screen, self._color, \
+    #         [self._x, self._y, self._width, self._height], 2)
+    #     pygame.draw.rect(screen, self._color, \
+    #         [self._x + (self._width - self._hitbox)/2, \
+    #         self._y + (self._height - self._hitbox)/2, \
+    #         self._hitbox, self._hitbox], 2)
 
     # an enemy's x, y, x_speed, y_speed must be set before moving it
     # so that pattern knows what to do
@@ -118,7 +116,7 @@ class Enemy(Entity):
         self._x += self._x_speed * dt
         self._y += self._y_speed * dt
 
-        self._draw(screen)
+        #self._draw(screen)
 
     def _attack(self, projs):
         if self._x_speed == 0 and self._y_speed == 0:
@@ -167,7 +165,7 @@ class Boss(Entity):
             self._direction = -1
         self._x += self._x_speed * dt
         self._y += self._y_speed * dt
-        pygame.draw.rect(screen, self._color, [self._x, self._y, self._width, self._height], 2)
+        # pygame.draw.rect(screen, self._color, [self._x, self._y, self._width, self._height], 2)
 
     def _attack(self, projs):
         """

@@ -89,6 +89,10 @@ class Entity:
             self._y + (self._height - self._hitbox)/2, \
             self._hitbox, self._hitbox)
 
+    def get_position(self):
+        # returns draw area
+        return (self._x, self._y, self._width, self._height)
+
     def collide(self, target):
         if target.get_ID() == self._ID:
             return 0

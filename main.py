@@ -1,5 +1,6 @@
 import pygame, sys
 from individuals import *
+from gui import *
 from threading import Thread
 
 # Define some colors
@@ -8,7 +9,6 @@ WHITE    = ( 255, 255, 255)
 RED      = ( 255,   0,   0)
 
 # Set the width and height of the screen [width,height]
-# SCREEN_SIZE = [1024, 768]
 
 # This is a simple class that will help us print to the screen
 # It has nothing to do with the joysticks, just outputing the
@@ -42,11 +42,13 @@ argv = sys.argv[1:]
 if len(argv) > 1:
     SCREEN_SIZE = (int(argv[0]), int(argv[1]))
 else:
-    SCREEN_SIZE = (800, 600)
+    SCREEN_SIZE = (1280, 720)
 
 pygame.init()
  
 screen = pygame.display.set_mode(SCREEN_SIZE)
+
+main_gui = GUI(*SCREEN_SIZE)
 
 pygame.display.set_caption("PvPy")
 
@@ -107,7 +109,6 @@ for i in range(joystick_count):
         players.remove(player) # joystick init failed, drop player
 
 last_time = pygame.time.get_ticks()
-
 # -------- Main Program Loop -----------
 while done==False:
     now = pygame.time.get_ticks()
@@ -121,16 +122,19 @@ while done==False:
 
     screen.fill(WHITE)
     textPrint.reset()
-
     textPrint.print(screen, "Number of projs: {}".format(len(projs)))
     textPrint.print(screen, "Boss health: {}".format(boss.health))
+    textPrint.print(screen, "FPS: {}".format(clock.get_fps()))
     
 
     for player in enumerate(players):
         player[1].update(projs, screen, dt)
+        main_gui.draw_rect(player[1])
+        main_gui.draw_hit_box(player[1])
         textPrint.print(screen, "Player {} health: {}".format(player[0] + 1, player[1].health))
-    
+
     boss.update(projs, screen, dt)
+    main_gui.draw_rect(boss)
     enemy.update(projs, screen, dt)
 
     for proj in projs:
@@ -139,13 +143,16 @@ while done==False:
             proj.collide(boss)
             for player in players:
                 proj.collide(player)
+            main_gui.draw_rect(proj)
         else:
             projs.remove(proj) # drop off proj pointer
 
     # ALL CODE TO DRAW SHOULD GO ABOVE THIS COMMENT
     # Go ahead and update the screen with what we've drawn.
-    pygame.display.flip()
-    
+    # pygame.display.flip()
+
+    main_gui.refresh()
+
     # Limit to 120 frames per second
     clock.tick(120)
 

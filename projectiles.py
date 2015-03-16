@@ -49,7 +49,7 @@ class StraightProjectile(Projectile):
     def _move(self, screen, dt):
         self._x += self._x_speed * dt
         self._y += self._y_speed * dt
-        pygame.draw.rect(screen, self._color, [self._x, self._y, self._width, self._height], 2)
+        #pygame.draw.rect(screen, self._color, [self._x, self._y, self._width, self._height], 2)
 
 class FallingProjectile(Projectile):
     def __init__(self, ID, x, y, x_speed, gravity, direction):
@@ -64,7 +64,7 @@ class FallingProjectile(Projectile):
         self._x += self._x_speed * dt * self._direction
         self._y += self._y_speed * dt + self._gravity * dt * dt / 2
         self._y_speed += self._gravity * dt
-        pygame.draw.rect(screen, self._color, [self._x, self._y, self._width, self._height], 2)
+        #pygame.draw.rect(screen, self._color, [self._x, self._y, self._width, self._height], 2)
 
 
 
