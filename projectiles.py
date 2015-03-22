@@ -1,4 +1,5 @@
 import pygame
+from math import sqrt
 from entity import *
 
 # Define some colors
@@ -66,9 +67,25 @@ class FallingProjectile(Projectile):
         self._y_speed += self._gravity * dt
         #pygame.draw.rect(screen, self._color, [self._x, self._y, self._width, self._height], 2)
 
+class TargetedProjectile(Projectile):
+    def __init__(self, ID, x, y, speed, target):
+        super().__init__(ID, x, y)
+        self._target = target
+        self._speed = speed
 
+        if target is None:
+            self._x_speed = 0
+            self._y_speed = 0
+        else:
+            # direction math
+            x_diff = target.x - self._x
+            y_diff = target.y - self._y
+            hyp = sqrt(x_diff**2 + y_diff**2)
+            self._x_speed = self._speed * x_diff / hyp
+            self._y_speed = self._speed * y_diff / hyp
 
-
-
+    def _move(self, screen, dt):
+        self._x += self._x_speed * dt
+        self._y += self._y_speed * dt
 
 

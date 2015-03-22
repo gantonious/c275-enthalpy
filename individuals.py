@@ -118,13 +118,16 @@ class Enemy(Entity):
 
         #self._draw(screen)
 
-    def _attack(self, projs):
-        if self._x_speed == 0 and self._y_speed == 0:
-            proj = StraightProjectile(self._ID, self._x + self._width/2 - 2, self._y + self._height/2 - 2, 0, 200)
-            proj.health = 5
-            proj.width = 5
-            proj.height = 5
-            projs.append(proj)
+    def _attack(self, projs, target):
+        if self._pattern == fade_in:
+            if self._x_speed == 0 and self._y_speed == 0:
+                return
+        # proj = StraightProjectile(self._ID, self._x + self._width/2 - 2, self._y + self._height/2 - 2, 0, 200)
+        proj = TargetedProjectile(self._ID, self._x + self._width/2, self._y + self._height/2, 400, target)
+        proj.health = 5
+        proj.width = 5
+        proj.height = 5
+        projs.append(proj)
 
     @property
     def x_speed(self):
@@ -142,9 +145,9 @@ class Enemy(Entity):
     def y_speed(self, y_speed):
         self._y_speed = y_speed
 
-    def update(self, projs, screen, dt):
+    def update(self, projs, target, screen, dt):
         self._move(screen, dt)
-        self._attack(projs)
+        self._attack(projs, target)
 
 class Boss(Entity):
     def __init__(self, ID, x_speed, y_speed):

@@ -50,7 +50,7 @@ screen = pygame.display.set_mode(SCREEN_SIZE)
 
 main_gui = GUI(*SCREEN_SIZE)
 
-pygame.display.set_caption("PvPy")
+pygame.display.set_caption("enthalPy")
 
 #Loop until the user clicks the close button.
 done = False
@@ -133,9 +133,15 @@ while done==False:
         main_gui.draw_hit_box(player[1])
         textPrint.print(screen, "Player {} health: {}".format(player[0] + 1, player[1].health))
 
+        enemy.update(projs, player[1], screen, dt)
+
+    if not players:
+        # enemy.update(projs, None, screen, dt)
+        enemy.update(projs, boss, screen, dt)
+
+    main_gui.draw_rect(enemy)
     boss.update(projs, screen, dt)
     main_gui.draw_rect(boss)
-    enemy.update(projs, screen, dt)
 
     for proj in projs:
         if proj.on_screen(screen):
