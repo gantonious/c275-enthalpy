@@ -1,0 +1,14 @@
+FORMAT:
+-----------------------------------------
+
+Level: <number>
+Name: <name>
+
+Enemies:
+
+<Enemy/Boss> <x> <y> <health> <width> <height> <hitbox>
+*<pattern> {parameters}
+**<projectile> <health> <width> <height> {parameters}
++{options}
+
+Enemies end

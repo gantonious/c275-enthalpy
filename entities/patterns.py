@@ -1,57 +1,12 @@
-import entities
-
-def fade_in(enemy, screen, params):
-    speed = int(params[0])
-    factor = int(params[1])
-
-    if enemy.y_speed is None:
-        enemy.x_speed = 0
-        x_speed = enemy.x_speed
-        enemy.y_speed = speed
-        y_speed = enemy.y_speed
+def fade_in(enemy, screen, factor):
     if abs(enemy.x_speed) < 1:
         x_speed = 0
-    else:
-        x_speed = enemy.x_speed
     if abs(enemy.y_speed) < 1:
         y_speed = 0
-    else:
-        y_speed = enemy.y_speed
-
     return x_speed * factor, y_speed * factor
 
-def sweep(enemy, screen, params):
+def border(enemy, screen, border_speed):
     screen_size = screen.get_size()
-    speed = int(params[0])
-    delay = int(params[1])
-
-    if enemy.x_speed is None:
-        x_speed = speed
-        enemy.delay = 0
-        enemy.next_direction = 1
-
-    if enemy.delay > 0:
-        enemy.delay -= 1
-        return 0, 0
-
-    if enemy.x < 0:
-        enemy.x = 0
-        x_speed = 0
-        enemy.delay = delay
-        enemy.next_direction = 1
-    elif enemy.x + enemy.width > screen_size[0]:
-        enemy.x = screen_size[0] - enemy.width
-        x_speed = 0
-        enemy.delay = delay
-        enemy.next_direction = -1
-    else:
-        x_speed = speed*enemy.next_direction
-
-    return x_speed, 0
-
-def border(enemy, screen, params):
-    screen_size = screen.get_size()
-    border_speed = int(params[0])
 
     if enemy.x < 0:
         enemy.x = 0
@@ -60,7 +15,7 @@ def border(enemy, screen, params):
     if enemy.y < 0:
         enemy.y = 0
     if enemy.y + enemy.height > screen_size[1]:
-        enemy.y = screen_size[1] - enemy.height
+        enemy.y = screen_size[1] - enemy.width
 
     if enemy.x == 0: # down
         if enemy.y + enemy.height < screen_size[1]:
@@ -97,7 +52,3 @@ def border(enemy, screen, params):
             return 0, -abs(border_speed)
         else:
             return 0, abs(border_speed)
-
-entities.pattern_types["Border"] = border
-entities.pattern_types["Sweep"] = sweep
-entities.pattern_types["FadeIn"] = fade_in

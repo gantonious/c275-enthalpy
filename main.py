@@ -1,7 +1,8 @@
 import pygame, sys
+from threading import Thread
 from individuals import *
 from gui import *
-from threading import Thread
+from loader import *
 
 # Define some colors
 BLACK    = (   0,   0,   0)
@@ -38,6 +39,16 @@ def refresh_joysticks():
     pygame.joystick.quit()
     pygame.joystick.init()
 
+global game_is_running
+game_is_running = True
+
+def loader_init():
+    loader.gui = main_gui
+    loader.players = players
+    loader.enemies = enemies
+    level = "levels/1.lvl"
+    loader.load(level)
+
 argv = sys.argv[1:]
 if len(argv) > 1:
     SCREEN_SIZE = (int(argv[0]), int(argv[1]))
@@ -58,30 +69,15 @@ done = False
 # Used to manage how fast the screen updates
 clock = pygame.time.Clock()
 
-# these will eventually be automated
-boss = Boss(2, 1000, 0)
-boss.health = 1000
-boss.width = 40
-boss.height = 40
-boss.x = 200
-boss.y = 40
-boss.hitbox = 40
-
-enemy = Enemy(2, 0, 1000, border)
-enemy.health = 100
-enemy.width = 20
-enemy.height = 20
-enemy.x = 600
-enemy.y = 200
-enemy.hitbox = 20
-
 # Initialize the joysticks
 pygame.joystick.init()
     
 # Get ready to print
 textPrint = TextPrint()
+
 projs = []
 players = []
+enemies = []
 
 joystick_count = pygame.joystick.get_count()
 
@@ -108,6 +104,11 @@ for i in range(joystick_count):
     if (player.get_init == 0):
         players.remove(player) # joystick init failed, drop player
 
+thread = Thread(target=loader_init)
+global loaded
+loaded = False
+loader = Loader()
+
 last_time = pygame.time.get_ticks()
 # -------- Main Program Loop -----------
 while done==False:
@@ -123,9 +124,11 @@ while done==False:
     screen.fill(WHITE)
     textPrint.reset()
     textPrint.print(screen, "Number of projs: {}".format(len(projs)))
-    textPrint.print(screen, "Boss health: {}".format(boss.health))
     textPrint.print(screen, "FPS: {}".format(clock.get_fps()))
     
+    if not thread.is_alive() and not loaded:
+        thread.start()
+        loaded = True
 
     for player in enumerate(players):
         player[1].update(projs, screen, dt)
@@ -133,25 +136,23 @@ while done==False:
         main_gui.draw_hit_box(player[1])
         textPrint.print(screen, "Player {} health: {}".format(player[0] + 1, player[1].health))
 
-        enemy.update(projs, player[1], screen, dt)
-
-    if not players:
-        # enemy.update(projs, None, screen, dt)
-        enemy.update(projs, boss, screen, dt)
-
-    main_gui.draw_rect(enemy)
-    boss.update(projs, screen, dt)
-    main_gui.draw_rect(boss)
+    for enemy in enemies:
+        enemy.update(enemies, projs, screen, dt)
+        main_gui.draw_rect(enemy)
 
     for proj in projs:
         if proj.on_screen(screen):
             proj.update(screen, dt)
-            proj.collide(boss)
+            for enemy in enemies:
+                proj.collide(enemy)
             for player in players:
                 proj.collide(player)
             main_gui.draw_rect(proj)
         else:
             projs.remove(proj) # drop off proj pointer
+
+    if not enemies:
+        loader.set_clear(True)
 
     # ALL CODE TO DRAW SHOULD GO ABOVE THIS COMMENT
     # Go ahead and update the screen with what we've drawn.
@@ -167,4 +168,6 @@ while done==False:
 # Close the window and quit.
 # If you forget this line, the program will 'hang'
 # on exit if running from IDLE.
+if thread.is_alive():
+    loader.game_is_running = False
 pygame.quit()

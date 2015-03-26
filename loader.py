@@ -1,16 +1,138 @@
-from threading import Thread
+import entities, time
 
-class Loader(Thread):
+class Loader():
+    def __init__(self):
+        self._keep_going = True
+        self.finished = False
+        self.players = None # pass the list of players to loader pls
+        self.enemies = None # also the list of enemies pls thx
+        self.gui = None # one more thing
+        self.game_is_running = True
 
-    def run(self, level):
+    def set_clear(self, boolean):
+        self._keep_going = boolean
+
+    def get_clear(self):
+        return self._keep_going
+
+    def load(self, level):
         with open(level, 'r') as lvl:
-            load_header(lvl)
-            while True:
-                if load_next(lvl) is None:
+            self.load_header(lvl, self.gui)
+            while self.game_is_running:
+                if self.get_clear() and self.load_next(lvl) is None:
                     break
+        self.finished = True
 
-    def load_header(self, lvl):
+    def load_header(self, lvl, gui):
         # load assets and important information
 
-    def load_next(self):
+        # level number
+        line = lvl.readline()
+        while line.find("Level: ") < 0:
+            line = lvl.readline()
+            if line == "":
+                raise Exception("Expected level number")
+
+        # Get the level number
+        line = line.lstrip("Level: ")
+        self.gui.level_num = int(line)
+
+        # level name
+        line = lvl.readline()
+        while line.find("Name: ") < 0:
+            line = lvl.readline()
+            if line == "":
+                raise Exception("Expected level name")
+
+        # Get the level name
+        line = line.lstrip("Name: ")
+        self.gui.level_name = line
+
+        # enemies block
+        line = lvl.readline()
+        while line.find("Enemies:") < 0:
+            line = lvl.readline()
+            if line == "":
+                raise Exception("Expected enemies start")
+
+    def load_next(self, lvl):
         # load enemies as they happen
+        # return 0 if we still have stuff to load, return None if done
+        line = lvl.readline()
+        while line.find("Enemies end") < 0:
+            if line == "\n":
+                line = lvl.readline()
+                continue
+
+            line = line.rstrip()
+            if line == "Clear":
+                self.set_clear(False)
+                return 0
+
+            line = line.split(' ')
+
+            # delay line[1] ms
+            if line[0] == "Delay":
+                time.sleep(int(line[1])/1000)
+                line = lvl.readline()
+                continue
+
+            # Enemy x y width height health hitbox
+            if len(line) != 7:
+                raise Exception("Invalid enemy definition: {}".format(str(line)))
+
+            move_line = lvl.readline()
+            move_line = move_line.rstrip()
+            move_line = move_line.lstrip("*")
+            move_line = move_line.split(' ')
+            if move_line[0].find("*") == 0:
+                raise Exception("Invalid/no movement definition: {}".format(str(move_line)))
+
+            proj_line = lvl.readline()
+            proj_line = proj_line.rstrip()
+            proj_line = proj_line.lstrip("**")
+            proj_line = proj_line.split(' ')
+            if proj_line[0].find("*") == 0:
+                raise Exception("Invalid/no projectile definition: {}".format(str(proj_line)))
+
+            entity = entities.entity_types[line[0]] \
+                    (2, entities.pattern_types[move_line[0]], \
+                    entities.entity_types[proj_line[0]])
+            entity.x = int(line[1])
+            entity.y = int(line[2])
+            entity.health = int(line[3])
+            entity.width = int(line[4])
+            entity.height = int(line[5])
+            entity.hitbox = int(line[6])
+            entity.pattern_params = [float(move_line[i]) for i in range(1, len(move_line))]
+            entity.projectile_params = [float(proj_line[i]) for i in range(1, len(proj_line)-1)]
+            # oh man i am not good with computer pls to help
+            # conditional for targeting projectiles
+            if entities.entity_types[proj_line[0]].targets:
+                if len(self.players) > int(proj_line[-1]):
+                    entity.projectile_params.append(self.players[int(proj_line[-1])])
+                else:
+                    entity.projectile_params.append(None)
+            else:
+                entity.projectile_params.append(float(proj_line[-1]))
+            entity.center = entity.get_center()
+            self.enemies.append(entity)
+            return 0
+
+        print("Finished loading")
+        return None
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

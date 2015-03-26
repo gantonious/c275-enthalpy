@@ -21,13 +21,8 @@ class Entity:
     def health(self, health):
         self._health = health
 
-    @property
-    def damage(self):
-        return self._damage
-
-    @damage.setter
-    def damage(self, value):
-        self._damage = value
+    def update_health(self, damage):
+        self._health += damage
 
     @property
     def ID(self):
@@ -79,6 +74,7 @@ class Entity:
     def color(self, color):
         self._color = color
     
+    
     def get_location(self):
         return (self._x, self._y)
 
@@ -93,33 +89,19 @@ class Entity:
             self._y + (self._height - self._hitbox)/2, \
             self._hitbox, self._hitbox)
 
-    def get_center(self):
-        # returns the center of an entity
-        return (self._x + self._width/2, self._y + self._height/2)
-
     def get_position(self):
         # returns draw area
         return (self._x, self._y, self._width, self._height)
 
     def collide(self, target):
-        if target.ID == self._ID:
+        if target.get_ID() == self._ID:
             return 0
         coords = target.get_coords()
         if (self._x + self._width > coords[0] and \
             self._x < coords[0] + coords[2] and \
             self._y + self._height > coords[1] and \
             self._y < coords[1] + coords[3]):
-            self._health -= target.damage
-            target.health -= self._damage
+            self._state = 0
+            target.update_health(-1*self._damage)
             return 1
         return 0
-
-
-
-
-
-
-
-
-
-
