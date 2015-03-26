@@ -1,6 +1,6 @@
 import pygame, sys
 from threading import Thread
-from individuals import *
+from entities import individuals
 from gui import *
 from loader import *
 

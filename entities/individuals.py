@@ -1,5 +1,7 @@
 import pygame, time
-from entity import *
+from math import copysign
+from entity import Entity
+import entities
 from projectiles import *
 from patterns import *
 
@@ -61,6 +63,7 @@ class Player(Entity):
             elif self._y + self._height > screen_size[1]:
                 self._y = screen_size[1] - self._height
 
+        self.center = self.get_center()
         #self._draw(screen)
 
 
@@ -69,10 +72,7 @@ class Player(Entity):
 
         if abs(joy_input[2]) > self._threshold or abs(joy_input[3]) > self._threshold:
             proj = StraightProjectile(self._ID, self._x, self._y, \
-                self._shoot_sensitivity*joy_input[2] * 100, self._shoot_sensitivity*joy_input[3] * 100)
-            proj.health = 5
-            proj.width = 5
-            proj.height = 5
+                (5, 5, 5, self._shoot_sensitivity*joy_input[2] * 100, self._shoot_sensitivity*joy_input[3] * 100))
             proj.color = self._color
             projs.append(proj)
 
@@ -92,42 +92,68 @@ class Player(Entity):
         self._shoot(projs)
 
 class Enemy(Entity):
-    def __init__(self, ID, x_speed, y_speed, pattern):
+    def __init__(self, ID, pattern, proj):
         super().__init__(ID)
+        # these need to be passed by the loader
         self._pattern = pattern
-        self._x_speed = x_speed
-        self._y_speed = y_speed
+        self._pattern_params = None
+        self._projectile = proj
+        self._projectile_params = None
+        self._direction = 0
 
-    # def _draw(self, screen):
-    #     screen_size = screen.get_size()
-
-    #     pygame.draw.rect(screen, self._color, \
-    #         [self._x, self._y, self._width, self._height], 2)
-    #     pygame.draw.rect(screen, self._color, \
-    #         [self._x + (self._width - self._hitbox)/2, \
-    #         self._y + (self._height - self._hitbox)/2, \
-    #         self._hitbox, self._hitbox], 2)
+        self._x_speed = None
+        self._x_init = None
+        self._y_speed = None
 
     # an enemy's x, y, x_speed, y_speed must be set before moving it
     # so that pattern knows what to do
     def _move(self, screen, dt):
-        screen_size = screen.get_size()
-        self._x_speed, self._y_speed = self._pattern(self, screen, 200)
+        self._x_speed, self._y_speed = self._pattern(self, screen, self._pattern_params)
+        self._direction = 0 if self._x_speed == 0 else copysign(1, float(self._x_speed))
         self._x += self._x_speed * dt
         self._y += self._y_speed * dt
+        self.center = self.get_center()
 
-        #self._draw(screen)
-
-    def _attack(self, projs, target):
+    def _attack(self, projs):
         if self._pattern == fade_in:
-            if self._x_speed == 0 and self._y_speed == 0:
+            if self._x_speed != 0 or self._y_speed != 0:
                 return
-        # proj = StraightProjectile(self._ID, self._x + self._width/2 - 2, self._y + self._height/2 - 2, 0, 200)
-        proj = TargetedProjectile(self._ID, self._x + self._width/2, self._y + self._height/2, 400, target)
-        proj.health = 5
-        proj.width = 5
-        proj.height = 5
+        if self._projectile == FallingProjectile:
+            proj = self._projectile(self._ID, self.center[0], self.center[1], self._direction, self._projectile_params)
+        else:
+            proj = self._projectile(self._ID, self.center[0], self.center[1], self._projectile_params)
         projs.append(proj)
+
+    @property
+    def pattern(self):
+        return self._pattern
+
+    @pattern.setter
+    def pattern(self, pattern):
+        self._pattern = pattern
+
+    @property
+    def pattern_params(self):
+        return self._pattern_params
+
+    @pattern_params.setter
+    def pattern_params(self, params):
+        self._pattern_params = params
+    
+    @property
+    def projectile_params(self):
+        return self._projectile_params
+
+    @projectile_params.setter
+    def projectile_params(self, params):
+        self._projectile_params = params
+    
+    @property
+    def projectile(self):
+        return self._projectile
+    @projectile.setter
+    def projectile(self, proj):
+        self._projectile = proj
 
     @property
     def x_speed(self):
@@ -138,6 +164,14 @@ class Enemy(Entity):
         self._x_speed = x_speed
 
     @property
+    def x_init(self):
+        return self._x_init
+    @x_init.setter
+
+    def x_init(self, value):
+        self._x_init = value
+
+    @property
     def y_speed(self):
         return self._y_speed
 
@@ -145,41 +179,41 @@ class Enemy(Entity):
     def y_speed(self, y_speed):
         self._y_speed = y_speed
 
-    def update(self, projs, target, screen, dt):
+    def update(self, enemies, projs, screen, dt):
         self._move(screen, dt)
-        self._attack(projs, target)
-
-class Boss(Entity):
-    def __init__(self, ID, x_speed, y_speed):
-        super().__init__(ID)
-        self._x_speed = x_speed # in px/s
-        self._y_speed = y_speed
-        self._x_init = self._x_speed
-        self._direction = 1
-        self._moves = [(0, 0), (2, 0), (0, 0)] # tuples containg move and countdown
-
-    def _move(self, screen, dt):
-        screen_size = screen.get_size()
-        if self._x < 0:
-            self._x_speed = self._x_init
-            self._direction = 1
-        if self._x > screen_size[0]:
-            self._x_speed = -self._x_init
-            self._direction = -1
-        self._x += self._x_speed * dt
-        self._y += self._y_speed * dt
-        # pygame.draw.rect(screen, self._color, [self._x, self._y, self._width, self._height], 2)
-
-    def _attack(self, projs):
-        """
-        """
-        # proj = StraightProjectile(self._ID, self._x, self._y, 0, 200)
-        proj = FallingProjectile(self._ID, self._x + self._width/2, self._y + self._height/2, 50, 100, self._direction)
-        proj.health = 5
-        proj.width = 5
-        proj.height = 5
-        projs.append(proj)
-
-    def update(self, projs, screen, dt):
-        self._move(screen, dt)
+        if self._health <= 0:
+            enemies.remove(self)
         self._attack(projs)
+
+# class Boss(Entity):
+#     def __init__(self, ID, pattern, proj):
+#         super().__init__(ID)
+#         # these need to be passed by the loader
+#         self._pattern = pattern
+#         self._pattern_params = None
+#         self._projectile = proj
+#         self._projectile_params = None
+
+#         self._x_speed = None # in px/s
+#         self._y_speed = None
+
+#     def _move(self, screen, dt):
+#         screen_size = screen.get_size()
+#         self._x_speed, self._y_speed = self._pattern(self, screen, 200)
+#         self._x += self._x_speed * dt
+#         self._y += self._y_speed * dt
+
+#     def _attack(self, projs):
+#         # proj = StraightProjectile(self._ID, self._x, self._y, 0, 200)
+#         proj = (self._ID, self._x + self._width/2, self._y + self._height/2, 50, 100, sign(self._x_speed))
+#         proj.health = 5
+#         proj.width = 5
+#         proj.height = 5
+#         projs.append(proj)
+
+#     def update(self, projs, screen, dt):
+#         self._move(screen, dt)
+#         self._attack(projs)
+
+entities.entity_types["Enemy"] = Enemy
+# entities.entity_types["Boss"] = Boss
