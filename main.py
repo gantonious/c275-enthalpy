@@ -1,6 +1,7 @@
 import pygame, sys
 from threading import Thread
-from entities import individuals
+from entities.individuals import *
+from quadtree import Quadtree
 from gui import *
 from loader import *
 
@@ -109,9 +110,12 @@ global loaded
 loaded = False
 loader = Loader()
 
+proj_tree = Quadtree(0, 0, SCREEN_SIZE[0], SCREEN_SIZE[1], 0)
+
 last_time = pygame.time.get_ticks()
 # -------- Main Program Loop -----------
 while done==False:
+    collison = 0
     now = pygame.time.get_ticks()
     dt = (now - last_time) / 1000 # in seconds
     # print(dt)
@@ -130,6 +134,8 @@ while done==False:
         thread.start()
         loaded = True
 
+    proj_tree.clear()
+
     for player in enumerate(players):
         player[1].update(projs, screen, dt)
         main_gui.draw_rect(player[1])
@@ -143,16 +149,28 @@ while done==False:
     for proj in projs:
         if proj.on_screen(screen):
             proj.update(screen, dt)
+            proj_tree.insert(proj)
             for enemy in enemies:
                 proj.collide(enemy)
             for player in players:
                 proj.collide(player)
+                collison += 1
             main_gui.draw_rect(proj)
         else:
             projs.remove(proj) # drop off proj pointer
 
+    for enemy in enemies:
+        for proj in proj_tree.get_objects(enemy):
+            proj.collide(enemy)
+
+    for player in players:
+        for proj in proj_tree.get_objects(player):
+            proj.collide(player)
+
     if not enemies:
         loader.set_clear(True)
+
+    proj_tree.draw_tree(screen)
 
     # ALL CODE TO DRAW SHOULD GO ABOVE THIS COMMENT
     # Go ahead and update the screen with what we've drawn.
