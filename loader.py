@@ -77,8 +77,13 @@ class Loader():
                 line = lvl.readline()
                 continue
 
-            # Enemy x y width height health hitbox
-            if len(line) != 7:
+            # ignore line
+            if line[0] == "#":
+                line = lvl.readline()
+                continue
+
+            # Enemy x y width height health hitbox fire_rate
+            if len(line) != 8:
                 raise Exception("Invalid enemy definition: {}".format(str(line)))
 
             move_line = lvl.readline()
@@ -104,6 +109,8 @@ class Loader():
             entity.width = int(line[4])
             entity.height = int(line[5])
             entity.hitbox = int(line[6])
+            entity.fire_rate = int(line[7])
+            entity.shot_time = 0 # shots per second
             entity.pattern_params = [float(move_line[i]) for i in range(1, len(move_line))]
             entity.projectile_params = [float(proj_line[i]) for i in range(1, len(proj_line)-1)]
             # oh man i am not good with computer pls to help
@@ -117,9 +124,9 @@ class Loader():
                 entity.projectile_params.append(float(proj_line[-1]))
             entity.center = entity.get_center()
             self.enemies.append(entity)
+            entity.in_list = self.enemies
             return 0
 
-        print("Finished loading")
         return None
 
 

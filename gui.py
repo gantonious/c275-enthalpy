@@ -23,5 +23,3 @@ class GUI:
 
 	def refresh(self):
 		pygame.display.flip()
-
-

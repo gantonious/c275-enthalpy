@@ -17,7 +17,7 @@ class Quadtree:
     ---------
     """
     MAX_CAPACITY = 1
-    MAX_DEPTH = 20
+    MAX_DEPTH = 0
     def __init__(self, x, y, width, height, depth):
         self._x = x
         self._y = y

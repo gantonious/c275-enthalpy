@@ -101,6 +101,7 @@ for i in range(joystick_count):
         player.x = 800
         player.y = 600
     players.append(player)
+    player.in_list = players
 
     if (player.get_init == 0):
         players.remove(player) # joystick init failed, drop player
@@ -115,7 +116,7 @@ proj_tree = Quadtree(0, 0, SCREEN_SIZE[0], SCREEN_SIZE[1], 0)
 last_time = pygame.time.get_ticks()
 # -------- Main Program Loop -----------
 while done==False:
-    collison = 0
+    collision = 0
     now = pygame.time.get_ticks()
     dt = (now - last_time) / 1000 # in seconds
     # print(dt)
@@ -143,21 +144,18 @@ while done==False:
         textPrint.print(screen, "Player {} health: {}".format(player[0] + 1, player[1].health))
 
     for enemy in enemies:
-        enemy.update(enemies, projs, screen, dt)
+        enemy.update(projs, screen, dt)
         main_gui.draw_rect(enemy)
 
     for proj in projs:
-        if proj.on_screen(screen):
-            proj.update(screen, dt)
-            proj_tree.insert(proj)
-            for enemy in enemies:
-                proj.collide(enemy)
-            for player in players:
-                proj.collide(player)
-                collison += 1
-            main_gui.draw_rect(proj)
-        else:
-            projs.remove(proj) # drop off proj pointer
+        proj.update(screen, dt)
+        proj_tree.insert(proj)
+        # for enemy in enemies:
+        #     proj.collide(enemy)
+        # for player in players:
+        #     proj.collide(player)
+        #     collision += 1
+        main_gui.draw_rect(proj)
 
     for enemy in enemies:
         for proj in proj_tree.get_objects(enemy):
@@ -170,7 +168,7 @@ while done==False:
     if not enemies:
         loader.set_clear(True)
 
-    proj_tree.draw_tree(screen)
+    # proj_tree.draw_tree(screen)
 
     # ALL CODE TO DRAW SHOULD GO ABOVE THIS COMMENT
     # Go ahead and update the screen with what we've drawn.

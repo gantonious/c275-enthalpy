@@ -21,8 +21,13 @@ class Entity:
     def health(self, health):
         self._health = health
 
-    def update_health(self, damage):
-        self._health += damage
+    @property
+    def damage(self):
+        return self._damage
+
+    @damage.setter
+    def damage(self, value):
+        self._damage = value
 
     @property
     def ID(self):
@@ -74,7 +79,6 @@ class Entity:
     def color(self, color):
         self._color = color
     
-    
     def get_location(self):
         return (self._x, self._y)
 
@@ -89,19 +93,45 @@ class Entity:
             self._y + (self._height - self._hitbox)/2, \
             self._hitbox, self._hitbox)
 
+    def get_center(self):
+        # returns the center of an entity
+        return (self._x + self._width/2, self._y + self._height/2)
+
     def get_position(self):
         # returns draw area
         return (self._x, self._y, self._width, self._height)
 
+    def on_screen(self, screen):
+        # returns True if the entity is on screen (or should be on screen)
+        if self._x_speed is None or self._y_speed is None:
+            # this is a very bad assumption
+            return True
+
+        screen_size = screen.get_size()
+        return self._x + self._width > 0 and self._x < screen_size[0] and \
+            self._y + self._height > 0 and self._y < screen_size[1]
+
     def collide(self, target):
-        if target.get_ID() == self._ID:
+        if target.ID == self._ID:
             return 0
         coords = target.get_coords()
         if (self._x + self._width > coords[0] and \
             self._x < coords[0] + coords[2] and \
             self._y + self._height > coords[1] and \
             self._y < coords[1] + coords[3]):
-            self._state = 0
-            target.update_health(-1*self._damage)
-            return 1
-        return 0
+            self._health -= target.damage
+            target.health -= self._damage
+            return True
+        return False
+
+    def update(self):
+        if self.health < 0:
+            self.despawn()
+
+    def despawn(self):
+        try:
+            self.in_list.remove(self)
+        except NameError:
+            print("Entity's containing list not set!")
+            return False
+        return True

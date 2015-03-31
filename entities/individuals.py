@@ -1,9 +1,9 @@
-import pygame, time
+import pygame
 from math import copysign
-from entity import Entity
+from entities.entity import Entity
 import entities
-from projectiles import *
-from patterns import *
+from entities.projectiles import *
+from entities.patterns import *
 
 # Define some colors
 BLACK    = (   0,   0,   0)
@@ -37,14 +37,6 @@ class Player(Entity):
         else:
             self._map = [0, 1, 2, 3, 11] # default
 
-    # def _draw(self, screen):
-    #     screen_size = screen.get_size()
-
-    #     pygame.draw.rect(screen, self._color, \
-    #         [self._x + (self._width - self._hitbox)/2, \
-    #         self._y + (self._height - self._hitbox)/2, \
-    #         self._hitbox, self._hitbox], 2)
-
     def _move(self, screen, dt):
         joy_input = self._get_input()
         screen_size = screen.get_size()
@@ -69,12 +61,14 @@ class Player(Entity):
 
     def _shoot(self, projs):
         joy_input = self._get_input()
+        center = self.get_center()
 
         if abs(joy_input[2]) > self._threshold or abs(joy_input[3]) > self._threshold:
-            proj = StraightProjectile(self._ID, self._x, self._y, \
+            proj = StraightProjectile(self._ID, center[0], center[1], \
                 (5, 5, 5, self._shoot_sensitivity*joy_input[2] * 100, self._shoot_sensitivity*joy_input[3] * 100))
             proj.color = self._color
             projs.append(proj)
+            proj.in_list = projs
 
     def _get_input(self):
         return [self._joystick.get_axis(self._map[0]), \
@@ -90,6 +84,10 @@ class Player(Entity):
         screen_size = screen.get_size()
         self._move(screen, dt)
         self._shoot(projs)
+
+    def despawn(self):
+        # players will do something else eventually
+        super().despawn()
 
 class Enemy(Entity):
     def __init__(self, ID, pattern, proj):
@@ -108,21 +106,26 @@ class Enemy(Entity):
     # an enemy's x, y, x_speed, y_speed must be set before moving it
     # so that pattern knows what to do
     def _move(self, screen, dt):
-        self._x_speed, self._y_speed = self._pattern(self, screen, self._pattern_params)
+        self._x_speed, self._y_speed = self._pattern(self, screen, dt, self._pattern_params)
         self._direction = 0 if self._x_speed == 0 else copysign(1, float(self._x_speed))
         self._x += self._x_speed * dt
         self._y += self._y_speed * dt
         self.center = self.get_center()
 
     def _attack(self, projs):
-        if self._pattern == fade_in:
+        if self.wait_to_shoot:
             if self._x_speed != 0 or self._y_speed != 0:
                 return
-        if self._projectile == FallingProjectile:
-            proj = self._projectile(self._ID, self.center[0], self.center[1], self._direction, self._projectile_params)
-        else:
-            proj = self._projectile(self._ID, self.center[0], self.center[1], self._projectile_params)
-        projs.append(proj)
+        shot_time = pygame.time.get_ticks()
+        # self.shot_time should be set in the loader
+        if shot_time - self.shot_time >= 1000/self.fire_rate:
+            if self._projectile == FallingProjectile:
+                proj = self._projectile(self._ID, self.center[0], self.center[1], self._direction, self._projectile_params)
+            else:
+                proj = self._projectile(self._ID, self.center[0], self.center[1], self._projectile_params)
+            projs.append(proj)
+            proj.in_list = projs
+            self.shot_time = shot_time
 
     @property
     def pattern(self):
@@ -179,10 +182,9 @@ class Enemy(Entity):
     def y_speed(self, y_speed):
         self._y_speed = y_speed
 
-    def update(self, enemies, projs, screen, dt):
+    def update(self, projs, screen, dt):
+        super().update()
         self._move(screen, dt)
-        if self._health <= 0:
-            enemies.remove(self)
         self._attack(projs)
 
 # class Boss(Entity):
