@@ -189,6 +189,10 @@ class Enemy(Entity):
         self._move(screen, dt)
         self._attack(projs)
 
+    def collide(self, target):
+        super().collide(target)
+        # spawn some drops
+
 # class Boss(Entity):
 #     def __init__(self, ID, pattern, proj):
 #         super().__init__(ID)
