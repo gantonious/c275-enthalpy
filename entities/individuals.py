@@ -65,7 +65,9 @@ class Player(Entity):
 
         if abs(joy_input[2]) > self._threshold or abs(joy_input[3]) > self._threshold:
             proj = StraightProjectile(self._ID, center[0], center[1], \
-                (5, 5, 5, self._shoot_sensitivity*joy_input[2] * 100, self._shoot_sensitivity*joy_input[3] * 100))
+                (5, 5, 5, self._shoot_sensitivity * 100, self._shoot_sensitivity * 100))
+            # if you want speed based on joystick tilt, do:
+            # self._shoot_sensitivity*joy_input[2] * 100, self._shoot_sensitivity*joy_input[3]
             proj.color = self._color
             projs.append(proj)
             proj.in_list = projs

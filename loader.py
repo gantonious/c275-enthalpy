@@ -1,6 +1,6 @@
 import entities, time
 
-class Loader():
+class Loader:
     def __init__(self):
         self._keep_going = True
         self.finished = False

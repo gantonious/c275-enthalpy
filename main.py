@@ -93,7 +93,7 @@ for i in range(joystick_count):
     player.health = 100
     player.width = 30
     player.height = 30
-    player.hitbox = 5
+    player.hitbox = 8
     if player.ID == 0:
         player.x = 400
         player.y = 600
