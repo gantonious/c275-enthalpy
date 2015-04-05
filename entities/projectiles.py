@@ -78,14 +78,15 @@ class TargetedProjectile(Projectile):
         self._width = int(params[1])
         self._height = int(params[2])
         self._speed = int(params[3])
-        target = params[4]
+        self.target = params[4]
 
-        if target is None: # garbage collect
-            self.despawn()
+        if self.target is None:
+            self._x_speed = 0
+            self._y_speed = 0
         else:
             # direction math
             self_center = self.get_center()
-            target_center = target.get_center()
+            target_center = self.target.get_center()
             x_diff = target_center[0] - self_center[0]
             y_diff = target_center[1] - self_center[1]
             hyp = sqrt(x_diff**2 + y_diff**2)
@@ -93,6 +94,8 @@ class TargetedProjectile(Projectile):
             self._y_speed = self._speed * y_diff / hyp
 
     def _move(self, screen, dt):
+        if self.target is None:
+            self.despawn() # i have to do this here so that despawn() doesn't get mad
         self._x += self._x_speed * dt
         self._y += self._y_speed * dt
 

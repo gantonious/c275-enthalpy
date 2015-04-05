@@ -17,7 +17,7 @@ Enemy 600 200 100 20 20 20 2
 # *Straight 200 200
 # **Falling 5 5 5 400 100
 
-Clear
+# Clear
 
 Enemy 600 200 100 20 20 20 5
 *Border 200

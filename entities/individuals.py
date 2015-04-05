@@ -1,5 +1,5 @@
 import pygame
-from math import copysign
+from math import copysign, sqrt
 from entities.entity import Entity
 import entities
 from entities.projectiles import *
@@ -17,6 +17,7 @@ class Player(Entity):
         self._sensitivity = 25 # in px/s
         self._shoot_sensitivity = 20
         self._slowdown = 10
+        self.shot_time = 0
         self._threshold = 0.08
         self._joystick = joystick # grabs this players joystick object
         self._map = [] # key bindings
@@ -64,13 +65,17 @@ class Player(Entity):
         center = self.get_center()
 
         if abs(joy_input[2]) > self._threshold or abs(joy_input[3]) > self._threshold:
-            proj = StraightProjectile(self._ID, center[0], center[1], \
-                (5, 5, 5, self._shoot_sensitivity * 100, self._shoot_sensitivity * 100))
-            # if you want speed based on joystick tilt, do:
-            # self._shoot_sensitivity*joy_input[2] * 100, self._shoot_sensitivity*joy_input[3]
-            proj.color = self._color
-            projs.append(proj)
-            proj.in_list = projs
+            x_factor = self._shoot_sensitivity*joy_input[2]
+            y_factor = self._shoot_sensitivity*joy_input[3]
+            hyp = sqrt(x_factor**2 + y_factor**2)
+            shot_time = pygame.time.get_ticks()
+            if shot_time - self.shot_time >= 1000/hyp:
+                proj = StraightProjectile(self._ID, center[0], center[1], \
+                    (5, 5, 5, x_factor*100, y_factor*100))
+                proj.color = self._color
+                projs.append(proj)
+                proj.in_list = projs
+                self.shot_time = shot_time
 
     def get_input(self):
         return [self._joystick.get_axis(self._map[0]), \
