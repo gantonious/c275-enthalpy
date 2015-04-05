@@ -4,7 +4,7 @@ from entities.individuals import *
 
 class GUI:
     """
-    Handles any drawing
+    GUI is Kami-sama
     """
     BLACK    = (   0,   0,   0)
     WHITE    = ( 255, 255, 255)
@@ -19,10 +19,6 @@ class GUI:
         self.level_num = None
         self.level_name = None
         self.interfaces = []
-        self.alive = True
-        self.now = 0
-        self.last_time = 0
-        self.dt = 0
         self.clock = pygame.time.Clock()
         self.reset()
 
@@ -85,30 +81,41 @@ class GUI:
         self._screen.fill(GUI.BLACK)
         pygame.draw.rect(self._screen, GUI.WHITE, self._play_area)
 
-
     def get_play_area(self):
         return self._play_area
 
     def run(self):
-        while self.alive:
-            self.now = pygame.time.get_ticks()
-            self.dt = (self.now - self.last_time) / 1000 # in seconds
-            # print(dt)
+        """
+        Runs gui, updates interface with most priorty, aka last interface in interfaces
+        Ends runtime when the gui runs out of interfaces
+        """
+        alive = True
+        last_time = 0
+        dt = 0
+
+        while alive:
+            if self.interfaces == []:
+                alive = False
+                continue
+
+            now = pygame.time.get_ticks()
+            dt = (now - last_time) / 1000 # in seconds
 
             # EVENT PROCESSING STEP
             for event in pygame.event.get(): # User did something
                 if event.type == pygame.QUIT: # If user clicked close
-                    self.alive = False # Flag that we are done so we exit this loop
+                    alive = False # Flag that we are done so we exit this loop
 
-            self.interfaces[-1].update(self._screen, self.dt)
+            self.interfaces[-1].update(self._screen, dt)
             self.interfaces[-1].draw(self._screen)
 
-            self.last_time = self.now
+            last_time = now
 
-        self.interfaces[-1].kill_thread()
+        if self.interfaces != []:
+            self.interfaces[-1].kill_thread()
+        
         pygame.quit()
         
-
     def refresh(self):
         pygame.display.flip()
         self.clock.tick(120)

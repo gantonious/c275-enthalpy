@@ -5,21 +5,20 @@ from quadtree import Quadtree
 from gui import *
 from loader import *
 from textprint import TextPrint
+from interfaces.interface import Interface
 
-class Main_Game:
+class Main_Game(Interface):
     def __init__(self, gui):
-        self.gui = gui
         self.projs = []
         self.enemies = []
-        self.players = gui.players
-        self.reset()
+        super().__init__(gui)
 
     def reset(self):
+        self.players = self.gui.players
         self.thread = Thread(target=self.loader_init)
         global loaded
         self.loaded = False
         self.loader = Loader()
-
         self.proj_tree = Quadtree(*self.gui.get_play_area())
 
     def loader_init(self):
@@ -41,24 +40,14 @@ class Main_Game:
         self.proj_tree.clear()
 
         for player in enumerate(self.players):
-            # gui.draw_rect(player[1])
-            # gui.draw_hit_box(player[1])
             player[1].update(self.projs, screen, dt)
-            #textPrint.print_text(screen, "Player {} health: {}".format(player[0] + 1, player[1].health))
 
         for enemy in self.enemies:
             enemy.update(self.projs, screen, dt)
-            # gui.draw_rect(enemy)
 
         for proj in self.projs:
             proj.update(screen, dt)
             self.proj_tree.insert(proj)
-            # for enemy in enemies:
-            #     proj.collide(enemy)
-            # for player in players:
-            #     proj.collide(player)
-            #     collision += 1
-            # gui.draw_rect(proj)
 
         for enemy in self.enemies:
             for proj in self.proj_tree.get_objects(enemy):
@@ -70,14 +59,6 @@ class Main_Game:
 
         if not self.enemies:
             self.loader.set_clear(True)
-
-        # proj_tree.draw_tree(screen)
-
-        # ALL CODE TO DRAW SHOULD GO ABOVE THIS COMMENT
-        # Go ahead and update the screen with what we've drawn.
-        # pygame.display.flip()
-
-        # gui.refresh()
 
     def kill_thread(self):
         if self.thread.is_alive():
