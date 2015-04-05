@@ -2,6 +2,11 @@ import pygame
 from textprint import TextPrint
 from entities.individuals import *
 
+# import all interfaces for GUI to run
+import interfaces
+from interfaces.main_game import Main_Game
+from interfaces.main_menu import Main_Menu
+
 class GUI:
     """
     GUI is Kami-sama
@@ -33,16 +38,6 @@ class GUI:
             joystick = pygame.joystick.Joystick(i)
             player = Player(i, joystick)
             # 100, 30, 30, 240, 600, 4, 5, RED
-            player.health = 100
-            player.width = 30
-            player.height = 30
-            player.hitbox = 8
-            if player.ID == 0:
-                player.x = 400
-                player.y = 600
-            if player.ID == 1:
-                player.x = 800
-                player.y = 600
             self.players.append(player)
             player.in_list = self.players
 
@@ -51,6 +46,11 @@ class GUI:
 
     def add_interface(self, interface):
         self.interfaces.append(interface)
+
+    def pop_interface(self):
+        if self.interfaces:
+            return self.interfaces.pop()
+        return None
     
     def draw_player_status(self, players):
         if not players:
@@ -106,10 +106,28 @@ class GUI:
                 if event.type == pygame.QUIT: # If user clicked close
                     alive = False # Flag that we are done so we exit this loop
 
-            self.interfaces[-1].update(self._screen, dt)
+            interface_status = self.interfaces[-1].update(self._screen, dt)
             self.interfaces[-1].draw(self._screen)
 
+            # handdles changing interfaces, also handles the threads of each interface
+            # as the user changes interface
+            if interface_status != True:
+                if not interface_status[0]:
+                    # kill current interface
+                    self.interfaces[-1].kill_thread()
+                    self.pop_interface()
+                # load new interface if specified
+                if interface_status[1] != None:
+                    if interface_status[0]:
+                        # if we didnt kill previous interface, pause its thread
+                        self.interfaces[-1].pause_thread()
+                    self.add_interface(interfaces.interface_types[interface_status[1]](self))
+                if self.interfaces != []:
+                    # resume thread of interface with current priority
+                    self.interfaces[-1].resume_thread()
+
             last_time = now
+            print(self.clock.get_fps())
 
         if self.interfaces != []:
             self.interfaces[-1].kill_thread()

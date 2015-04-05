@@ -1,5 +1,4 @@
 import sys
-from interfaces.main_menu import Main_Menu
 from gui import *
 
 argv = sys.argv[1:]
@@ -12,7 +11,7 @@ else:
 main_gui = GUI(*SCREEN_SIZE)
 main_gui.set_caption("enthalPy")
 
-menu = Main_Menu(main_gui)
+menu = interfaces.interface_types["main_menu"](main_gui)
 
 main_gui.add_interface(menu)
 main_gui.run()

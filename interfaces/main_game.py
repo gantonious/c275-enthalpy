@@ -5,6 +5,7 @@ from quadtree import Quadtree
 from gui import *
 from loader import *
 from textprint import TextPrint
+import interfaces
 from interfaces.interface import Interface
 
 class Main_Game(Interface):
@@ -16,6 +17,18 @@ class Main_Game(Interface):
 
     def reset(self):
         self.players = self.gui.players
+        for player in self.players:
+            player.health = 100
+            player.width = 30
+            player.height = 30
+            player.hitbox = 8
+            if player.ID == 0:
+                player.x = 400
+                player.y = 600
+            if player.ID == 1:
+                player.x = 800
+                player.y = 600
+
         self.thread = Thread(target=self.loader_init)
         global loaded
         self.loaded = False
@@ -63,6 +76,15 @@ class Main_Game(Interface):
         if not self.enemies:
             self.loader.set_clear(True)
 
+        if self.players[0].health < 0:
+            # self.kill_thread()
+            # from interfaces.main_menu import Main_Menu
+            # self.gui.remove_interface(self)
+            # self.gui.add_interface(Main_Menu(self.gui))
+            return (False, "main_menu")
+
+        return True
+
     def kill_thread(self):
         if self.thread.is_alive():
             self.loader.game_is_running = False
@@ -90,3 +112,5 @@ class Main_Game(Interface):
         self.proj_tree.draw_tree(screen)
 
         self.gui.refresh()
+
+interfaces.interface_types["main_game"] = Main_Game
