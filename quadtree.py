@@ -1,12 +1,7 @@
 import pygame
-import random
 
 # Define some colors
-BLACK    = (   0,   0,   0)
-WHITE    = ( 255, 255, 255)
-RED      = ( 255,   0,   0)
-GREEN    = (   0, 255,   0)
-BLUE     = (   0,   0, 255)
+BLACK = (0, 0, 0)
 
 class Quadtree:
     """
@@ -16,9 +11,13 @@ class Quadtree:
     | 2 | 3 |
     ---------
     """
+
+    # reducing the max depth of the tree reduces tree build time however, increases
+    # the total collisions detection checks that must be conducted ~4 should provide a good
+    # middle ground between the two
     MAX_CAPACITY = 1
-    MAX_DEPTH = 0
-    def __init__(self, x, y, width, height, depth):
+    MAX_DEPTH = 4
+    def __init__(self, x, y, width, height, depth=0):
         self._x = x
         self._y = y
         self._width = width
@@ -49,33 +48,17 @@ class Quadtree:
         item_coords = item.get_position()
         node_index = None
 
-        if item_coords[0] > self._x and \
-            item_coords[0] + item_coords[2] < self._x + self._width / 2 and \
-            item_coords[1] > self._y and \
-            item_coords[1] + item_coords[3] < self._y + self._height / 2:
+        for child in enumerate(self._children):
+            if not child[1]:
+                continue
 
-            node_index = 0
+            if item_coords[0] > child[1]._x and \
+                item_coords[0] + item_coords[2] < child[1]._x + child[1]._width and \
+                item_coords[1] > child[1]._y and \
+                item_coords[1] + item_coords[3] < child[1]._y + child[1]._height:
 
-        elif item_coords[0] > self._x + self._width / 2 and \
-            item_coords[0] + item_coords[2] < self._x + self._width and \
-            item_coords[1] > self._y and \
-            item_coords[1] + item_coords[3] < self._y + self._height / 2:
-
-            node_index = 1
-
-        elif item_coords[0] > self._x and \
-            item_coords[0] + item_coords[2] < self._x + self._width / 2 and \
-            item_coords[1] > self._y + self._height / 2 and \
-            item_coords[1] + item_coords[3] < self._y + self._height:
-
-            node_index = 2
-
-        elif item_coords[0] > self._x + self._width / 2 and \
-            item_coords[0] + item_coords[2] < self._x + self._width and \
-            item_coords[1] > self._y + self._height / 2 and \
-            item_coords[1] + item_coords[3] < self._y + self._height:
-
-            node_index = 3
+                node_index = child[0]
+                break
 
         return node_index
 
@@ -133,7 +116,6 @@ class Quadtree:
 
         return objects
 
-            
     def clear(self):
         """
         Clears Quadtree by dropping all objects in child nodes and dropping all pointers to

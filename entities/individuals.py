@@ -38,7 +38,7 @@ class Player(Entity):
             self._map = [0, 1, 2, 3, 11] # default
 
     def _move(self, screen, dt):
-        joy_input = self._get_input()
+        joy_input = self.get_input()
         screen_size = screen.get_size()
 
         if abs(joy_input[0]) > self._threshold:
@@ -60,7 +60,7 @@ class Player(Entity):
 
 
     def _shoot(self, projs):
-        joy_input = self._get_input()
+        joy_input = self.get_input()
         center = self.get_center()
 
         if abs(joy_input[2]) > self._threshold or abs(joy_input[3]) > self._threshold:
@@ -72,7 +72,7 @@ class Player(Entity):
             projs.append(proj)
             proj.in_list = projs
 
-    def _get_input(self):
+    def get_input(self):
         return [self._joystick.get_axis(self._map[0]), \
                 self._joystick.get_axis(self._map[1]), \
                 self._joystick.get_axis(self._map[2]), \
