@@ -100,6 +100,18 @@ class Loader:
             if proj_line[0].find("*") == 0:
                 raise Exception("Invalid/no projectile definition: {}".format(str(proj_line)))
 
+            drop_list = []
+            drop_line = lvl.readline()
+            while drop_line is not "\n":
+                drop_line = drop_line.rstrip()
+                drop_line = drop_line.lstrip("***")
+                drop_line = drop_line.split(' ')
+                if drop_line[0].find("*") == 0:
+                    raise Exception("Invalid/no drop definition: {}".format(str(drop_line)))
+                drop_list.append(drop_line)
+                drop_line = lvl.readline()
+
+            # create entity with the defined properties
             entity = entities.entity_types[line[0]] \
                     (2, entities.pattern_types[move_line[0]], \
                     entities.entity_types[proj_line[0]])
@@ -123,23 +135,10 @@ class Loader:
             else:
                 entity.projectile_params.append(float(proj_line[-1]))
             entity.center = entity.get_center()
+            entity.drops = drop_list
+
             self.enemies.append(entity)
             entity.in_list = self.enemies
             return 0
 
         return None
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

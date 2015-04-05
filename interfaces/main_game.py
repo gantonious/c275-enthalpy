@@ -11,6 +11,7 @@ class Main_Game(Interface):
     def __init__(self, gui):
         self.projs = []
         self.enemies = []
+        self.drops = []
         super().__init__(gui)
 
     def reset(self):
@@ -43,7 +44,7 @@ class Main_Game(Interface):
             player[1].update(self.projs, screen, dt)
 
         for enemy in self.enemies:
-            enemy.update(self.projs, screen, dt)
+            enemy.update(self.projs, self.drops, screen, dt)
 
         for proj in self.projs:
             proj.update(screen, dt)
@@ -56,6 +57,8 @@ class Main_Game(Interface):
         for player in self.players:
             for proj in self.proj_tree.get_objects(player):
                 proj.collide(player)
+            for drop in self.drops:
+                drop.collide(player)
 
         if not self.enemies:
             self.loader.set_clear(True)
@@ -77,6 +80,12 @@ class Main_Game(Interface):
 
         for proj in self.projs:
             self.gui.draw_rect(proj)
+
+        for drop in self.drops:
+            if not drop.used:
+                self.gui.draw_rect(drop)
+            else:
+                drop.update()
 
         self.proj_tree.draw_tree(screen)
 

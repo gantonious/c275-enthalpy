@@ -4,6 +4,7 @@ from entities.entity import Entity
 import entities
 from entities.projectiles import *
 from entities.patterns import *
+from entities.drops import *
 
 # Define some colors
 BLACK    = (   0,   0,   0)
@@ -13,6 +14,8 @@ RED      = ( 255,   0,   0)
 class Player(Entity):
     def __init__(self, ID, joystick, damage=5, color=RED):
         super().__init__(ID, damage, color)
+        self.score = 0
+        self.proj_size = 5
         self._hitbox = 5
         self._sensitivity = 25 # in px/s
         self._shoot_sensitivity = 20
@@ -69,9 +72,9 @@ class Player(Entity):
             y_factor = self._shoot_sensitivity*joy_input[3]
             hyp = sqrt(x_factor**2 + y_factor**2)
             shot_time = pygame.time.get_ticks()
-            if shot_time - self.shot_time >= 1000/hyp:
+            if shot_time - self.shot_time >= 500/hyp:
                 proj = StraightProjectile(self._ID, center[0], center[1], \
-                    (5, 5, 5, x_factor*100, y_factor*100))
+                    (5, self.proj_size, self.proj_size, x_factor*100, y_factor*100))
                 proj.color = self._color
                 projs.append(proj)
                 proj.in_list = projs
@@ -189,14 +192,32 @@ class Enemy(Entity):
     def y_speed(self, y_speed):
         self._y_speed = y_speed
 
-    def update(self, projs, screen, dt):
-        super().update()
+    @property
+    def drops(self):
+        return self._drops
+    
+    @drops.setter
+    def drops(self, drops):
+        self._drops = drops
+
+    def update(self, projs, drops, screen, dt):
+        if self.health < 0:
+            self.despawn(drops)
         self._move(screen, dt)
         self._attack(projs)
 
-    def collide(self, target):
-        super().collide(target)
+    def despawn(self, drops):
+        super().despawn()
+
         # spawn some drops
+        for d in self._drops:
+            drop_params = [float(d[i]) for i in range(1, len(d))]
+            drop = entities.drop_types[d[0]](self._x, self._y, drop_params)
+            drop.width = 20
+            drop.height = 20
+            drops.append(drop)
+            drop.in_list = drops
+
 
 # class Boss(Entity):
 #     def __init__(self, ID, pattern, proj):
