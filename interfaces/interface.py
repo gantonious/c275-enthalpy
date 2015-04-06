@@ -23,8 +23,11 @@ class Interface:
         Returns: 
 
         True - Keep this interface alive and do nothing else
-        (Bool, Interface) - Add interface Interface with highest priority, 
-        Bool indicates whether to keep current Interface alive or not
+        (Int, Interface) - Add interface Interface with highest priority, 
+        Int represents how many interfaces to kill from highest priority to least priority:
+        Int = 0 preserves all interfaces
+        Int = 1 kills current interface
+        Int = 2 kills current and its parent interface and so on...
         """
         pass
         

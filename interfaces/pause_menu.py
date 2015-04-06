@@ -5,7 +5,7 @@ from interfaces.interface import Interface
 from drawing import *
 from elements import *
 
-class Main_Menu(Interface):
+class Pause_Menu(Interface):
     def __init__(self, players, width, height):
         super().__init__(players, width, height)
         self.button_reset()
@@ -23,8 +23,8 @@ class Main_Menu(Interface):
 
         button_x = (self.width - button_width) / 2
         button_y = (self.height - num_buttons * button_height - (num_buttons - 1) * y_spacing) / 2
-        self.buttons.append(Button(button_x, button_y, button_width, button_height, "main_game", "play"))
-        self.buttons.append(Button(button_x, button_y + y_spacing + button_height, button_width, button_height, None, "exit"))
+        self.buttons.append(Button(button_x, button_y, button_width, button_height, None, "resume"))
+        self.buttons.append(Button(button_x, button_y + y_spacing + button_height, button_width, button_height, "main_menu", "Main Menu"))
         self.buttons[0].selected = 1
         self.selected_button = self.buttons[0]
 
@@ -40,7 +40,10 @@ class Main_Menu(Interface):
                 self.selected_button = self.buttons[1]
 
             if self.players[0].get_input()[5]:
-                return (1, self.selected_button.event)
+                if self.selected_button.event == None:
+                    return (1, self.selected_button.event)
+                else:
+                    return (2, self.selected_button.event)
 
         return True
 
@@ -49,4 +52,4 @@ class Main_Menu(Interface):
         for button in self.buttons:
             button.draw(screen)
 
-interfaces.interface_types["main_menu"] = Main_Menu
+interfaces.interface_types["pause_menu"] = Pause_Menu

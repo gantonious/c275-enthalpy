@@ -5,6 +5,7 @@ from entities.individuals import *
 import interfaces
 from interfaces.main_game import Main_Game
 from interfaces.main_menu import Main_Menu
+from interfaces.pause_menu import Pause_Menu
 
 class GUI:
     """
@@ -65,6 +66,9 @@ class GUI:
     def set_caption(self, caption):
         pygame.display.set_caption(caption)
 
+    def set_icon(self, icon):
+        pygame.display.set_icon(icon)
+
     def run(self):
         """
         Runs gui, updates interface with most priorty, aka last interface in interfaces
@@ -93,13 +97,13 @@ class GUI:
             # handdles changing interfaces, also handles the threads of each interface
             # as the user changes interface
             if interface_status != True:
-                if not interface_status[0]:
-                    # kill current interface
-                    self.interfaces[-1].kill_thread()
-                    self.pop_interface()
+                if interface_status[0] > 0:
+                    for i in range(interface_status[0]):
+                        self.interfaces[-1].kill_thread()
+                        self.pop_interface()
                 # load new interface if specified
                 if interface_status[1] != None:
-                    if interface_status[0]:
+                    if interface_status[0] == 0:
                         # if we didnt kill previous interface, pause its thread
                         self.interfaces[-1].pause_thread()
                     self.add_interface(interfaces.interface_types[interface_status[1]](self.players, self.width, self.height))
@@ -110,8 +114,9 @@ class GUI:
             last_time = now
             self.refresh()
 
-        if self.interfaces != []:
-            self.interfaces[-1].kill_thread()
+        # kills all lingering threads in preperation for ending runtime
+        for interface in self.interfaces:
+            interface.kill_thread()
 
         pygame.quit()
         

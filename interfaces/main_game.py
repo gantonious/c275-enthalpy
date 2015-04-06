@@ -15,12 +15,13 @@ class Main_Game(Interface):
         self.drops = []
         super().__init__(players, width, height)
         self.printer = TextPrint()
-        self.play_area = [self.width*0.05, self.height*0.1, self.width*0.9, self.height*0.8]
+        self.play_area = [0, 0, self.width, self.height*0.9]
         self.reset()
 
     def reset(self):
         for player in self.players:
             player.health = 100
+            player.max_health = 100
             player.width = 30
             player.height = 30
             player.hitbox = 8
@@ -81,9 +82,20 @@ class Main_Game(Interface):
             self.loader.set_clear(True)
 
         if self.players[0].health < 0:
-            return (False, "main_menu")
+            return (1, "main_menu")
+            
+        if self.players[0].get_input()[6]:
+            return (0, "pause_menu")
 
         return True
+
+    def pause_thread(self):
+        if self.thread.is_alive():
+            self.loader.pasued = True
+
+    def resume_thread(self):
+        if self.thread.is_alive():
+            self.loader.pasued = False
 
     def kill_thread(self):
         if self.thread.is_alive():
@@ -96,9 +108,11 @@ class Main_Game(Interface):
         for player in enumerate(self.players):
             draw_entity(screen, player[1])
             draw_hit_box(screen, player[1])
+            draw_health_bar(screen, player[1])
 
         for enemy in self.enemies:
             draw_entity(screen, enemy)
+            draw_health_bar(screen, enemy)
 
         for proj in self.projs:
             draw_entity(screen, proj)
@@ -112,6 +126,6 @@ class Main_Game(Interface):
         self.proj_tree.draw_tree(screen)
 
         self.printer.reset()
-        self.printer.print_text(screen, "FPS: {}".format(clock.get_fps()), (255, 255, 0))
+        self.printer.print_text(screen, "FPS: {}".format(clock.get_fps()), (0, 0, 0))
 
 interfaces.interface_types["main_game"] = Main_Game

@@ -23,11 +23,10 @@ class Projectile(Entity):
         pass
 
     def update(self, dimensions, dt):
-        super().update()
         self._move(dimensions, dt)
+        super().update(dimensions)
         if not self.on_screen(dimensions):
             self.despawn()
-
 
 class StraightProjectile(Projectile):
 

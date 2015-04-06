@@ -22,6 +22,14 @@ class Entity:
         self._health = health
 
     @property
+    def max_health(self):
+        return self._max_health
+
+    @max_health.setter
+    def max_health(self, health):
+        self._max_health = health
+
+    @property
     def damage(self):
         return self._damage
 
@@ -123,8 +131,8 @@ class Entity:
             return True
         return False
 
-    def update(self):
-        if self.health < 0:
+    def update(self, dimensions):
+        if self.health < 0 and self.on_screen(dimensions):
             self.despawn()
 
     def despawn(self):

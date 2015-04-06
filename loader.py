@@ -8,6 +8,7 @@ class Loader:
         self.enemies = None # also the list of enemies pls thx
         self.interface = None # one more thing
         self.game_is_running = True
+        self.paused = False
 
     def set_clear(self, boolean):
         self._keep_going = boolean
@@ -19,6 +20,8 @@ class Loader:
         with open(level, 'r') as lvl:
             self.load_header(lvl, self.interface)
             while self.game_is_running:
+                if self.paused:
+                    continue
                 if self.get_clear() and self.load_next(lvl) is None:
                     break
         self.finished = True
@@ -130,6 +133,7 @@ class Loader:
             entity.x = int(line[1])
             entity.y = int(line[2])
             entity.health = int(line[3])
+            entity.max_health = int(line[3])
             entity.width = int(line[4])
             entity.height = int(line[5])
             entity.hitbox = int(line[6])

@@ -35,11 +35,11 @@ class Player(Entity):
 
     def _map_joystick(self):
         if self._joystick.get_name() == "Wireless Controller":
-            self._map = [0, 1, 2, 3, 4, 1] # PS4 controller
+            self._map = [0, 1, 2, 3, 4, 1, 9] # PS4 controller
         elif self._joystick.get_name() == "PLAYSTATION(R)3 Controller":
-            self._map = [0, 1, 2, 3, 11, 1] # PS3 controller
+            self._map = [0, 1, 2, 3, 11, 1, 9] # PS3 controller
         else:
-            self._map = [0, 1, 2, 3, 11, 1] # default
+            self._map = [0, 1, 2, 3, 11, 1, 9] # default
 
     def _move(self, dimensions, dt):
         joy_input = self.get_input()
@@ -85,7 +85,8 @@ class Player(Entity):
                 self._joystick.get_axis(self._map[2]), \
                 self._joystick.get_axis(self._map[3]), \
                 self._joystick.get_button(self._map[4]), \
-                self._joystick.get_button(self._map[5])]
+                self._joystick.get_button(self._map[5]), \
+                self._joystick.get_button(self._map[6])]
 
     def get_init(self):
         return self._joystick.get_init()
@@ -222,6 +223,7 @@ class Boss(Entity):
 
         self._health_checkpoint = 0
         self._healths = []
+        self._max_health = 0
         self._pattern = self._patterns[0]
         self._projectile = self._projectiles[0]
         self._current = 0

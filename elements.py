@@ -27,4 +27,12 @@ class Button:
     def draw(self, screen):
         pygame.draw.rect(screen, self.color[self.selected], (self.x, self.y, self.width, self.height), 2)
         textBitmap = self.font.render(self.caption, True, (0, 0, 0))
-        screen.blit(textBitmap, [self.x, self.y])
+        x = (self.width - textBitmap.get_size()[0]) / 2 + self.x
+        y = (self.height - textBitmap.get_size()[1]) / 2 + self.y
+        screen.blit(textBitmap, [x, y])
+
+class TextBox:
+    pass
+
+class PictureBox:
+    pass

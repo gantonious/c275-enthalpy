@@ -89,16 +89,16 @@ def border(enemy, dimensions, dt, params):
     enemy.wait_to_shoot = False
     border_speed = int(params[0])
 
-    if enemy.x < 0:
+    if enemy.x < dimensions[0]:
         enemy.x = dimensions[0]
     if enemy.x + enemy.width > dimensions[0] + dimensions[2]:
         enemy.x = dimensions[0] + dimensions[2]  - enemy.width
-    if enemy.y < 0:
+    if enemy.y < dimensions[1]:
         enemy.y = dimensions[1]
     if enemy.y + enemy.height > dimensions[1] + dimensions[3]:
         enemy.y = dimensions[1] + dimensions[3] - enemy.height
 
-    if enemy.x == 0: # down
+    if enemy.x == dimensions[0]: # down
         if enemy.y + enemy.height < dimensions[1] + dimensions[3]:
             return 0, border_speed
         else:
@@ -113,7 +113,7 @@ def border(enemy, dimensions, dt, params):
             return 0, -border_speed
         else:
             return -border_speed, 0
-    if enemy.y == 0: # left
+    if enemy.y == dimensions[1]: # left
         if enemy.x > 0:
             return -border_speed, 0
         else:
