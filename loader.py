@@ -6,7 +6,7 @@ class Loader:
         self.finished = False
         self.players = None # pass the list of players to loader pls
         self.enemies = None # also the list of enemies pls thx
-        self.gui = None # one more thing
+        self.interface = None # one more thing
         self.game_is_running = True
 
     def set_clear(self, boolean):
@@ -17,13 +17,13 @@ class Loader:
 
     def load(self, level):
         with open(level, 'r') as lvl:
-            self.load_header(lvl, self.gui)
+            self.load_header(lvl, self.interface)
             while self.game_is_running:
                 if self.get_clear() and self.load_next(lvl) is None:
                     break
         self.finished = True
 
-    def load_header(self, lvl, gui):
+    def load_header(self, lvl, interface):
         # load assets and important information
 
         # level number
@@ -35,7 +35,7 @@ class Loader:
 
         # Get the level number
         line = line.lstrip("Level: ")
-        self.gui.level_num = int(line)
+        self.interface.level_num = int(line)
 
         # level name
         line = lvl.readline()
@@ -46,7 +46,7 @@ class Loader:
 
         # Get the level name
         line = line.lstrip("Name: ")
-        self.gui.level_name = line
+        self.interface.level_name = line
 
         # enemies block
         line = lvl.readline()

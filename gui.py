@@ -1,5 +1,4 @@
 import pygame
-from textprint import TextPrint
 from entities.individuals import *
 
 # import all interfaces for GUI to run
@@ -10,24 +9,30 @@ from interfaces.main_menu import Main_Menu
 class GUI:
     """
     GUI is Kami-sama
+
+    Also GUI handles running interfaces such as menus or gameplay. It will run
+    the interfaces with top priorty as indicated by the last interface in interfaces,
+    when the GUI runs out of interfaces to run, application runtime ends.
+
+    but yeah GUI is Kami-sama
     """
-    BLACK    = (   0,   0,   0)
-    WHITE    = ( 255, 255, 255)
-    RED      = ( 255,   0,   0)
 
     def __init__(self, width, height):
-        pygame.init()
-        self._screen = pygame.display.set_mode([width, height])
-        self._play_area = [width*0.025, height*0.05, width*0.95, height*0.8]
-        self._width = width
-        self._height = height
-        self.level_num = None
-        self.level_name = None
+        self.width = width
+        self.height = height
         self.interfaces = []
-        self.clock = pygame.time.Clock()
         self.reset()
 
     def reset(self):
+        """
+        Resets GUI screen and registered players
+        """
+        # reset pygame
+        pygame.init()
+        self.screen = pygame.display.set_mode([self.width, self.height])
+        self.clock = pygame.time.Clock()
+
+        # reset joysticks/players
         self.players = []
         pygame.joystick.quit()
         pygame.joystick.init()
@@ -51,38 +56,9 @@ class GUI:
         if self.interfaces:
             return self.interfaces.pop()
         return None
-    
-    def draw_player_status(self, players):
-        if not players:
-            return
-
-        num_players = len(players)
-        spacing = 20
-        status_width = min(int(self._width / num_players) - spacing, 200)
-        start = int((self._width - status_width*num_players)/ num_players - spacing)
-        status_height = int(self._height * 0.125)
-
-        for player in enumerate(players):
-            # draws status box
-            pygame.draw.rect(self._screen, player[1].color, 
-                (start + spacing / 2 + player[0] * (status_width + spacing), 
-                self._height - status_height, status_width, status_height))
 
     def set_caption(self, caption):
         pygame.display.set_caption(caption)
-
-    def draw_rect(self, entity):
-        pygame.draw.rect(self._screen, entity.color, entity.get_position(), 2)
-
-    def draw_hit_box(self, entity):
-        pygame.draw.rect(self._screen, entity.color, entity.get_coords(), 2)
-
-    def draw_game_background(self):
-        self._screen.fill(GUI.BLACK)
-        pygame.draw.rect(self._screen, GUI.WHITE, self._play_area)
-
-    def get_play_area(self):
-        return self._play_area
 
     def run(self):
         """
@@ -106,8 +82,8 @@ class GUI:
                 if event.type == pygame.QUIT: # If user clicked close
                     alive = False # Flag that we are done so we exit this loop
 
-            interface_status = self.interfaces[-1].update(self._screen, dt)
-            self.interfaces[-1].draw(self._screen)
+            interface_status = self.interfaces[-1].update(self.screen, dt)
+            self.interfaces[-1].draw(self.screen)
 
             # handdles changing interfaces, also handles the threads of each interface
             # as the user changes interface
@@ -121,17 +97,14 @@ class GUI:
                     if interface_status[0]:
                         # if we didnt kill previous interface, pause its thread
                         self.interfaces[-1].pause_thread()
-                    self.add_interface(interfaces.interface_types[interface_status[1]](self))
+                    self.add_interface(interfaces.interface_types[interface_status[1]](self.players, self.width, self.height))
                 if self.interfaces != []:
                     # resume thread of interface with current priority
                     self.interfaces[-1].resume_thread()
 
             last_time = now
-            print(self.clock.get_fps())
+            self.refresh()
 
-        if self.interfaces != []:
-            self.interfaces[-1].kill_thread()
-        
         pygame.quit()
         
     def refresh(self):

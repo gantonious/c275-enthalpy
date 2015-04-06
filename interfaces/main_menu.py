@@ -1,9 +1,11 @@
+import pygame
 import interfaces
 from interfaces.interface import Interface
+from drawing import *
 
 class Main_Menu(Interface):
-    def __init__(self, gui):
-        super().__init__(gui)
+    def __init__(self, players, width, height):
+        super().__init__(players, width, height)
 
     def update(self, screen, dt):
         if self.players:
@@ -17,7 +19,6 @@ class Main_Menu(Interface):
         return True
 
     def draw(self, screen):
-        screen.fill(self.gui.WHITE)
-        self.gui.refresh()
+        screen.fill((255, 255, 255))
 
 interfaces.interface_types["main_menu"] = Main_Menu

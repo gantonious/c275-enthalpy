@@ -2,21 +2,20 @@ import pygame, sys
 from threading import Thread
 from entities.individuals import *
 from quadtree import Quadtree
-from gui import *
 from loader import *
-from textprint import TextPrint
 import interfaces
 from interfaces.interface import Interface
+from drawing import *
 
 class Main_Game(Interface):
-    def __init__(self, gui):
+    def __init__(self, players, width, height):
         self.projs = []
         self.enemies = []
         self.drops = []
-        super().__init__(gui)
+        super().__init__(players, width, height)
+        self.reset()
 
     def reset(self):
-        self.players = self.gui.players
         for player in self.players:
             player.health = 100
             player.width = 30
@@ -30,13 +29,12 @@ class Main_Game(Interface):
                 player.y = 600
 
         self.thread = Thread(target=self.loader_init)
-        global loaded
         self.loaded = False
         self.loader = Loader()
-        self.proj_tree = Quadtree(*self.gui.get_play_area())
+        self.proj_tree = Quadtree(self.width*0.025, self.height*0.05, self.width*0.95, self.height*0.8)
 
     def loader_init(self):
-        self.loader.gui = self.gui
+        self.loader.interface = self
         self.loader.players = self.players
         self.loader.enemies = self.enemies
         self.level = "levels/1.lvl"
@@ -77,10 +75,6 @@ class Main_Game(Interface):
             self.loader.set_clear(True)
 
         if self.players[0].health < 0:
-            # self.kill_thread()
-            # from interfaces.main_menu import Main_Menu
-            # self.gui.remove_interface(self)
-            # self.gui.add_interface(Main_Menu(self.gui))
             return (False, "main_menu")
 
         return True
@@ -90,27 +84,28 @@ class Main_Game(Interface):
             self.loader.game_is_running = False
 
     def draw(self, screen):
-        self.gui.draw_game_background()
-        self.gui.draw_player_status(self.players)
+        screen.fill((0,0,0))
+
+        play_area = [self.width*0.025, self.height*0.05, self.width*0.95, self.height*0.8]
+        pygame.draw.rect(screen, (255,255,255), play_area)
 
         for player in enumerate(self.players):
-            self.gui.draw_rect(player[1])
-            self.gui.draw_hit_box(player[1])
+            draw_entity(screen, player[1])
+            draw_hit_box(screen, player[1])
 
         for enemy in self.enemies:
-            self.gui.draw_rect(enemy)
+            draw_entity(screen, enemy)
 
         for proj in self.projs:
-            self.gui.draw_rect(proj)
+            draw_entity(screen, proj)
 
         for drop in self.drops:
             if not drop.used:
-                self.gui.draw_rect(drop)
+                draw_entity(screen, drop)
             else:
                 drop.update()
 
         self.proj_tree.draw_tree(screen)
 
-        self.gui.refresh()
 
 interfaces.interface_types["main_game"] = Main_Game

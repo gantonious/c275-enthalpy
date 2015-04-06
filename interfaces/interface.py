@@ -1,10 +1,11 @@
 class Interface:
-    def __init__(self, gui):
-        self.gui = gui
-        self.reset()
+    def __init__(self, players, width, height):
+        self.players = players
+        self.width = width
+        self.height = height
 
     def reset(self):
-        self.players = self.gui.players
+        pass
 
     def pause_thread(self):
         pass
