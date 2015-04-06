@@ -16,7 +16,7 @@ class Interface:
     def kill_thread(self):
         pass
 
-    def update(self, screen, dt):
+    def update(self, dt):
         """
         Runs all the logic for the current frame
 

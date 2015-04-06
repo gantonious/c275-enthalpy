@@ -14,12 +14,12 @@ class Main_Menu(Interface):
         Resets buttons and initializes them
         """
         self.buttons = []
-        self.buttons.append(Button(10, 10, 100, 50, "main_game", "play"))
-        self.buttons.append(Button(10, 70, 100, 50, None, "exit"))
+        self.buttons.append(Button(10, 10, 300, 50, "main_game", "play"))
+        self.buttons.append(Button(10, 70, 300, 50, None, "exit"))
         self.buttons[0].selected = 1
         self.selected_button = self.buttons[0]
 
-    def update(self, screen, dt):
+    def update(self, dt):
         if self.players:
             if self.players[0].get_input()[3] < -0.08 or self.players[0].get_input()[1] < -0.08:
                 self.buttons[0].selected = 1

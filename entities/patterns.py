@@ -1,10 +1,10 @@
 import entities, pygame
 from math import copysign
 
-def straight(enemy, screen, dt, params):
+def straight(enemy, dimensions, dt, params):
     enemy.wait_to_shoot = False
     if enemy.x_speed is None:
-        if enemy.on_screen(screen):
+        if enemy.on_screen(dimensions):
             enemy.is_on_screen = True
         else:
             enemy.is_on_screen = False
@@ -15,7 +15,7 @@ def straight(enemy, screen, dt, params):
 
     return int(params[0]), int(params[1])
 
-def fade_in(enemy, screen, dt, params):
+def fade_in(enemy, dimensions, dt, params):
     enemy.wait_to_shoot = True
     factor = int(params[2])
 
@@ -33,9 +33,8 @@ def fade_in(enemy, screen, dt, params):
     return 0 if enemy.x_speed == 0 else enemy.x_speed - (factor*dt), \
            0 if enemy.y_speed == 0 else enemy.y_speed - (factor*dt)
     
-def sweep(enemy, screen, dt, params):
+def sweep(enemy, dimensions, dt, params):
     enemy.wait_to_shoot = False
-    screen_size = screen.get_size()
     speed = int(params[0])
     delay = int(params[1])
 
@@ -49,13 +48,13 @@ def sweep(enemy, screen, dt, params):
         return 0, 0
 
     if enemy.x < 0:
-        enemy.x = 0
+        enemy.x = dimensions[0]
         x_speed = 0
         enemy.delay = delay
         enemy.next_direction = 1
-    elif enemy.x + enemy.width > screen_size[0]:
-        enemy.x = screen_size[0] - enemy.width
-        x_speed = 0
+    elif enemy.x + enemy.width > dimensions[0] + dimensions[2]:
+        enemy.x = dimensions[0] + dimensions[2] - enemy.width
+        x_speed = dimensions[0]
         enemy.delay = delay
         enemy.next_direction = -1
     else:
@@ -63,31 +62,30 @@ def sweep(enemy, screen, dt, params):
 
     return x_speed, 0
 
-def border(enemy, screen, dt, params):
+def border(enemy, dimensions, dt, params):
     enemy.wait_to_shoot = False
-    screen_size = screen.get_size()
     border_speed = int(params[0])
 
     if enemy.x < 0:
-        enemy.x = 0
-    if enemy.x + enemy.width > screen_size[0]:
-        enemy.x = screen_size[0] - enemy.width
+        enemy.x = dimensions[0]
+    if enemy.x + enemy.width > dimensions[0] + dimensions[2]:
+        enemy.x = dimensions[0] + dimensions[2]  - enemy.width
     if enemy.y < 0:
-        enemy.y = 0
-    if enemy.y + enemy.height > screen_size[1]:
-        enemy.y = screen_size[1] - enemy.height
+        enemy.y = dimensions[1]
+    if enemy.y + enemy.height > dimensions[1] + dimensions[3]:
+        enemy.y = dimensions[1] + dimensions[3] - enemy.height
 
     if enemy.x == 0: # down
-        if enemy.y + enemy.height < screen_size[1]:
+        if enemy.y + enemy.height < dimensions[1] + dimensions[3]:
             return 0, border_speed
         else:
             return border_speed, 0
-    if enemy.y + enemy.height == screen_size[1]: # right
-        if enemy.x + enemy.width < screen_size[0]:
+    if enemy.y + enemy.height == dimensions[1] + dimensions[3]: # right
+        if enemy.x + enemy.width < dimensions[0] + dimensions[2]:
             return border_speed, 0
         else:
             return 0, -border_speed
-    if enemy.x + enemy.width == screen_size[0]: # up
+    if enemy.x + enemy.width == dimensions[0] + dimensions[2]: # up
         if enemy.y > 0:
             return 0, -border_speed
         else:
@@ -99,16 +97,16 @@ def border(enemy, screen, dt, params):
             return 0, border_speed
 
     # not on an edge
-    x_distance = min(enemy.x, screen_size[0] - enemy.x) # closest x-border
-    y_distance = min(enemy.y, screen_size[1] - enemy.y) # closest y-border
+    x_distance = min(enemy.x, dimensions[0] + dimensions[2] - enemy.x) # closest x-border
+    y_distance = min(enemy.y, dimensions[1] + dimensions[3] - enemy.y) # closest y-border
 
     if x_distance <= y_distance:
-        if enemy.x + enemy.width < screen_size[0] - enemy.x:
+        if enemy.x + enemy.width < dimensions[0] + dimensions[2] - enemy.x:
             return -abs(border_speed), 0
         else:
             return abs(border_speed), 0
     if y_distance < x_distance:
-        if enemy.y + enemy.height < screen_size[1] - enemy.y:
+        if enemy.y + enemy.height < dimensions[1] + dimensions[3] - enemy.y:
             return 0, -abs(border_speed)
         else:
             return 0, abs(border_speed)

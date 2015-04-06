@@ -15,6 +15,7 @@ class Main_Game(Interface):
         self.drops = []
         super().__init__(players, width, height)
         self.printer = TextPrint()
+        self.play_area = [self.width*0.05, self.height*0.1, self.width*0.9, self.height*0.8]
         self.reset()
 
     def reset(self):
@@ -33,7 +34,7 @@ class Main_Game(Interface):
         self.thread = Thread(target=self.loader_init)
         self.loaded = False
         self.loader = Loader()
-        self.proj_tree = Quadtree(self.width*0.025, self.height*0.05, self.width*0.95, self.height*0.8)
+        self.proj_tree = Quadtree(*self.play_area)
 
     def loader_init(self):
         self.loader.interface = self
@@ -42,7 +43,7 @@ class Main_Game(Interface):
         self.level = "levels/1.lvl"
         self.loader.load(self.level)
 
-    def update(self, screen, dt):
+    def update(self, dt):
         """
         Runs all the logic for the current frame
         """
@@ -54,19 +55,22 @@ class Main_Game(Interface):
         self.proj_tree.clear()
 
         for player in enumerate(self.players):
-            player[1].update(self.projs, screen, dt)
+            player[1].update(self.projs, self.play_area, dt)
 
         for enemy in self.enemies:
-            enemy.update(self.projs, self.drops, screen, dt)
+            enemy.update(self.projs, self.drops, self.play_area, dt)
 
+        # update projectiles and insert them into the tree
         for proj in self.projs:
-            proj.update(screen, dt)
+            proj.update(self.play_area, dt)
             self.proj_tree.insert(proj)
 
+        # run collisions on projectiles that have a high chance of colliding with enemy
         for enemy in self.enemies:
             for proj in self.proj_tree.get_objects(enemy):
                 proj.collide(enemy)
 
+        # run collisions on projectiles that have a high chance of colliding with player
         for player in self.players:
             for proj in self.proj_tree.get_objects(player):
                 proj.collide(player)
@@ -87,9 +91,7 @@ class Main_Game(Interface):
 
     def draw(self, screen, clock=None):
         screen.fill((0,0,0))
-
-        play_area = [self.width*0.025, self.height*0.05, self.width*0.95, self.height*0.8]
-        pygame.draw.rect(screen, (255,255,255), play_area)
+        pygame.draw.rect(screen, (255,255,255), self.play_area)
 
         for player in enumerate(self.players):
             draw_entity(screen, player[1])

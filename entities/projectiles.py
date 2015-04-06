@@ -18,15 +18,16 @@ class Projectile(Entity):
         self._hitbox = self._x
         self.shooter = shooter
 
-    def _move(self, screen, dt):
+    def _move(self, dimensions, dt):
         # python pls don't be mad
         pass
 
-    def update(self, screen, dt):
+    def update(self, dimensions, dt):
         super().update()
-        if not self.on_screen(screen):
+        self._move(dimensions, dt)
+        if not self.on_screen(dimensions):
             self.despawn()
-        self._move(screen, dt)
+
 
 class StraightProjectile(Projectile):
 
@@ -41,7 +42,7 @@ class StraightProjectile(Projectile):
         self._x_speed = int(params[3]) # in px/s
         self._y_speed = int(params[4])
 
-    def _move(self, screen, dt):
+    def _move(self, dimensions, dt):
         self._x += self._x_speed * dt
         self._y += self._y_speed * dt
 
@@ -64,7 +65,7 @@ class SunburstProjectiles(Projectile):
             self.shooter.turn = 0 # shots per turn
 
     # this method creates the actual sunburst, then the sunburst object despawns
-    def update(self, screen, dt):
+    def update(self, dimensions, dt):
         for i in range(self._shots):
             if i == 0:
                 x_speed = self._speed*cos(self.shooter.turn*2*pi/self._turn)
@@ -94,7 +95,7 @@ class FallingProjectile(Projectile):
         self._direction = direction
         self._y_speed = 0
 
-    def _move(self, screen, dt):
+    def _move(self, dimensions, dt):
         self._x += self._x_speed * dt * self._direction
         self._y += self._y_speed * dt + self._gravity * dt * dt / 2
         self._y_speed += self._gravity * dt
@@ -125,7 +126,7 @@ class TargetedProjectile(Projectile):
             self._x_speed = self._speed * x_diff / hyp
             self._y_speed = self._speed * y_diff / hyp
 
-    def _move(self, screen, dt):
+    def _move(self, dimensions, dt):
         if self.target is None:
             self.despawn() # i have to do this here so that despawn() doesn't get mad
         self._x += self._x_speed * dt

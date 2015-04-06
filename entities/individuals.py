@@ -41,23 +41,22 @@ class Player(Entity):
         else:
             self._map = [0, 1, 2, 3, 11, 1] # default
 
-    def _move(self, screen, dt):
+    def _move(self, dimensions, dt):
         joy_input = self.get_input()
-        screen_size = screen.get_size()
 
         if abs(joy_input[0]) > self._threshold:
             self._x += (self._sensitivity - (self._slowdown*joy_input[4]))*joy_input[0] * 20 * dt
-            if self._x < 0:
-                self._x = 0
-            elif self._x + self._width > screen_size[0]:
-                self._x = screen_size[0] - self._width
+            if self._x < dimensions[0]:
+                self._x = dimensions[0]
+            elif self._x + self._width > dimensions[0] + dimensions[2]:
+                self._x = dimensions[0] + dimensions[2] - self._width
 
         if abs(joy_input[1]) > self._threshold:
             self._y += (self._sensitivity - (self._slowdown*joy_input[4]))*joy_input[1] * 20 * dt
-            if self._y < 0:
-                self._y = 0
-            elif self._y + self._height > screen_size[1]:
-                self._y = screen_size[1] - self._height
+            if self._y < dimensions[1]:
+                self._y = dimensions[1]
+            elif self._y + self._height > dimensions[1] + dimensions[3]:
+                self._y = dimensions[1] + dimensions[3] - self._height
 
         self.center = self.get_center()
         #self._draw(screen)
@@ -91,9 +90,8 @@ class Player(Entity):
     def get_init(self):
         return self._joystick.get_init()
 
-    def update(self, projs, screen, dt):
-        screen_size = screen.get_size()
-        self._move(screen, dt)
+    def update(self, projs, dimensions, dt):
+        self._move(dimensions, dt)
         self._shoot(projs)
 
     def despawn(self):
@@ -116,8 +114,8 @@ class Enemy(Entity):
 
     # an enemy's x, y, x_speed, y_speed must be set before moving it
     # so that pattern knows what to do
-    def _move(self, screen, dt):
-        self._x_speed, self._y_speed = self._pattern(self, screen, dt, self._pattern_params)
+    def _move(self, dimensions, dt):
+        self._x_speed, self._y_speed = self._pattern(self, dimensions, dt, self._pattern_params)
         self._direction = 0 if self._x_speed == 0 else copysign(1, float(self._x_speed))
         self._x += self._x_speed * dt
         self._y += self._y_speed * dt
@@ -201,10 +199,10 @@ class Enemy(Entity):
     def drops(self, drops):
         self._drops = drops
 
-    def update(self, projs, drops, screen, dt):
+    def update(self, projs, drops, dimensions, dt):
         if self.health < 0:
             self.despawn(drops)
-        self._move(screen, dt)
+        self._move(dimensions, dt)
         self._attack(projs)
 
     def despawn(self, drops):

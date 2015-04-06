@@ -12,11 +12,8 @@ class Quadtree:
     ---------
     """
 
-    # reducing the max depth of the tree reduces tree build time however, increases
-    # the total collisions detection checks that must be conducted ~4 should provide a good
-    # middle ground between the two
     MAX_CAPACITY = 1
-    MAX_DEPTH = 4
+    MAX_DEPTH = 3
     def __init__(self, x, y, width, height, depth=0):
         self._x = x
         self._y = y

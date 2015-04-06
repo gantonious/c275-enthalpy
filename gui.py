@@ -87,7 +87,7 @@ class GUI:
                 if event.type == pygame.QUIT: # If user clicked close
                     alive = False # Flag that we are done so we exit this loop
 
-            interface_status = self.interfaces[-1].update(self.screen, dt)
+            interface_status = self.interfaces[-1].update(dt)
             self.interfaces[-1].draw(self.screen, clock=self.clock)
 
             # handdles changing interfaces, also handles the threads of each interface
@@ -109,6 +109,9 @@ class GUI:
 
             last_time = now
             self.refresh()
+
+        if self.interfaces != []:
+            self.interfaces[-1].kill_thread()
 
         pygame.quit()
         
