@@ -6,19 +6,16 @@ from loader import *
 import interfaces
 from interfaces.interface import Interface
 from drawing import *
+from textprint import TextPrint
 
 class Main_Game(Interface):
     def __init__(self, players, width, height):
         self.projs = []
         self.enemies = []
         self.drops = []
-<<<<<<< Updated upstream
         super().__init__(players, width, height)
-        self.reset()
-=======
         self.printer = TextPrint()
-        super().__init__(gui)
->>>>>>> Stashed changes
+        self.reset()
 
     def reset(self):
         for player in self.players:
@@ -88,17 +85,11 @@ class Main_Game(Interface):
         if self.thread.is_alive():
             self.loader.game_is_running = False
 
-<<<<<<< Updated upstream
-    def draw(self, screen):
+    def draw(self, screen, clock=None):
         screen.fill((0,0,0))
 
         play_area = [self.width*0.025, self.height*0.05, self.width*0.95, self.height*0.8]
         pygame.draw.rect(screen, (255,255,255), play_area)
-=======
-    def draw(self, screen, clock=None):
-        self.gui.draw_game_background()
-        self.gui.draw_player_status(self.players)
->>>>>>> Stashed changes
 
         for player in enumerate(self.players):
             draw_entity(screen, player[1])
@@ -118,12 +109,7 @@ class Main_Game(Interface):
 
         self.proj_tree.draw_tree(screen)
 
-<<<<<<< Updated upstream
+        self.printer.reset()
+        self.printer.print_text(screen, "FPS: {}".format(clock.get_fps()), (255, 255, 0))
 
 interfaces.interface_types["main_game"] = Main_Game
-=======
-        self.printer.reset()
-        self.printer.print_text(screen, "FPS: {}".format(clock.get_fps()), GUI.YELLOW)
-
-        self.gui.refresh()
->>>>>>> Stashed changes

@@ -16,13 +16,11 @@ class GUI:
 
     but yeah GUI is Kami-sama
     """
-<<<<<<< Updated upstream
-=======
+
     BLACK    = (   0,   0,   0)
     WHITE    = ( 255, 255, 255)
     RED      = ( 255,   0,   0)
     YELLOW   = ( 255, 255,   0)
->>>>>>> Stashed changes
 
     def __init__(self, width, height):
         self.width = width
@@ -89,9 +87,8 @@ class GUI:
                 if event.type == pygame.QUIT: # If user clicked close
                     alive = False # Flag that we are done so we exit this loop
 
-<<<<<<< Updated upstream
             interface_status = self.interfaces[-1].update(self.screen, dt)
-            self.interfaces[-1].draw(self.screen)
+            self.interfaces[-1].draw(self.screen, clock=self.clock)
 
             # handdles changing interfaces, also handles the threads of each interface
             # as the user changes interface
@@ -109,10 +106,6 @@ class GUI:
                 if self.interfaces != []:
                     # resume thread of interface with current priority
                     self.interfaces[-1].resume_thread()
-=======
-            self.interfaces[-1].update(self._screen, dt)
-            self.interfaces[-1].draw(self._screen, clock=self.clock)
->>>>>>> Stashed changes
 
             last_time = now
             self.refresh()
