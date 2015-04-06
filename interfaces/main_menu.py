@@ -8,13 +8,14 @@ from elements import *
 class Main_Menu(Interface):
     def __init__(self, players, width, height):
         super().__init__(players, width, height)
-        self.button_reset()
+        self.element_init()
         time.sleep(0.15) # button debounce
 
-    def button_reset(self):
+    def element_init(self):
         """
-        Resets buttons and initializes them
+        Initializes all UI elements
         """
+        # button init
         self.buttons = []
         num_buttons = 2
         button_width = 500
@@ -27,6 +28,12 @@ class Main_Menu(Interface):
         self.buttons.append(Button(button_x, button_y + y_spacing + button_height, button_width, button_height, None, "exit"))
         self.buttons[0].selected = 1
         self.selected_button = self.buttons[0]
+
+        # static element init
+        self.static_elements=[]
+        self.static_elements.append(TextBox("Roboto", 40, "Welcome to EnthalPy"))
+        self.static_elements[0].x = (self.width - self.static_elements[0].get_dimensions()[0]) / 2
+        self.static_elements[0].y = self.height * 0.2
 
     def update(self, dt):
         if self.players:
@@ -48,5 +55,7 @@ class Main_Menu(Interface):
         screen.fill((255, 255, 255))
         for button in self.buttons:
             button.draw(screen)
+        for element in self.static_elements:
+            element.draw(screen)
 
 interfaces.interface_types["main_menu"] = Main_Menu
