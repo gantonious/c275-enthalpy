@@ -86,22 +86,34 @@ class Loader:
             if len(line) != 8:
                 raise Exception("Invalid enemy definition: {}".format(str(line)))
 
+            move_list = []
+            proj_list = []
             move_line = lvl.readline()
-            move_line = move_line.rstrip()
-            move_line = move_line.lstrip("*")
-            move_line = move_line.split(' ')
-            if move_line[0].find("*") == 0:
-                raise Exception("Invalid/no movement definition: {}".format(str(move_line)))
+            while True:
+                move_line = move_line.rstrip()
+                move_line = move_line.lstrip("*")
+                move_line = move_line.split(' ')
+                if move_line[0].find("*") == 0:
+                    raise Exception("Invalid/no movement definition: {}".format(str(move_line)))
+                move_list.append(move_line)
 
-            proj_line = lvl.readline()
-            proj_line = proj_line.rstrip()
-            proj_line = proj_line.lstrip("**")
-            proj_line = proj_line.split(' ')
-            if proj_line[0].find("*") == 0:
-                raise Exception("Invalid/no projectile definition: {}".format(str(proj_line)))
+                proj_line = lvl.readline()
+                proj_line = proj_line.rstrip()
+                proj_line = proj_line.lstrip("**")
+                proj_line = proj_line.split(' ')
+                if proj_line[0].find("*") == 0:
+                    raise Exception("Invalid/no projectile definition: {}".format(str(proj_line)))
+                proj_list.append(proj_line)
+
+                next_line = lvl.readline()
+                if next_line.find("***") == 0:
+                    break
+                elif line[0] == "Enemy":
+                    raise Exception("Invalid enemy definition: {}".format(str(line)))
+                move_line = next_line
 
             drop_list = []
-            drop_line = lvl.readline()
+            drop_line = next_line
             while drop_line is not "\n":
                 drop_line = drop_line.rstrip()
                 drop_line = drop_line.lstrip("***")
@@ -113,8 +125,8 @@ class Loader:
 
             # create entity with the defined properties
             entity = entities.entity_types[line[0]] \
-                    (2, entities.pattern_types[move_line[0]], \
-                    entities.entity_types[proj_line[0]])
+                    (2, [entities.pattern_types[move_list[0][0]]], \
+                    [entities.entity_types[proj_list[0][0]]])
             entity.x = int(line[1])
             entity.y = int(line[2])
             entity.health = int(line[3])
@@ -123,17 +135,35 @@ class Loader:
             entity.hitbox = int(line[6])
             entity.fire_rate = int(line[7])
             entity.shot_time = 0 # shots per second
-            entity.pattern_params = [float(move_line[i]) for i in range(1, len(move_line))]
-            entity.projectile_params = [float(proj_line[i]) for i in range(1, len(proj_line)-1)]
+            entity.pattern_params = [[float(move_list[0][i]) for i in range(1, len(move_list[0]))]]
+            entity.projectile_params = [[float(proj_list[0][i]) for i in range(1, len(proj_list[0])-1)]]
             # oh man i am not good with computer pls to help
             # conditional for targeting projectiles
-            if entities.entity_types[proj_line[0]].targets:
-                if len(self.players) > int(proj_line[-1]):
-                    entity.projectile_params.append(self.players[int(proj_line[-1])])
+            if entities.entity_types[proj_list[0][0]].targets:
+                if len(self.players) > int(proj_list[0][-1]):
+                    entity.projectile_params[-1].append(self.players[int(proj_list[0][-1])])
                 else:
-                    entity.projectile_params.append(None)
+                    entity.projectile_params[-1].append(None)
             else:
-                entity.projectile_params.append(float(proj_line[-1]))
+                entity.projectile_params[-1].append(float(proj_list[0][-1]))
+
+            # boss-only code
+            if line[0] == "Boss":
+                # if len(move_list) != len(proj_list) i will be very mad at you
+                for j in range(1, len(move_list)):
+                    entity.patterns.append(entities.pattern_types[move_list[j][0]])
+                    entity.projectiles.append(entities.entity_types[proj_list[j][0]])
+                    entity.pattern_params += [[float(move_list[j][i]) for i in range(1, len(move_list[j]))]]
+                    entity.projectile_params += [[float(proj_list[j][i]) for i in range(1, len(proj_list[j])-1)]]
+                    if entities.entity_types[proj_list[j][0]].targets:
+                        if len(self.players) > int(proj_list[j][-1]):
+                            entity.projectile_params[-1].append(self.players[int(proj_list[j][-1])])
+                        else:
+                            entity.projectile_params[-1].append(None)
+                    else:
+                        if len(proj_list[j]) != 1:
+                            entity.projectile_params[-1].append(float(proj_list[j][-1]))
+
             entity.center = entity.get_center()
             entity.drops = drop_list
 

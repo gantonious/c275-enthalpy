@@ -1,5 +1,28 @@
 import entities, pygame
-from math import copysign
+from math import copysign, sqrt
+
+def move_to(enemy, screen, dt, params):
+    enemy.wait_to_shoot = False
+    move_to_x = int(params[0])
+    move_to_y = int(params[1])
+    speed = int(params[2])
+
+    if enemy.x_speed is None:
+        enemy.x_direction = copysign(1, move_to_x-enemy.x)
+        enemy.y_direction = copysign(1, move_to_y-enemy.y)
+        hyp = sqrt((move_to_x-enemy.x)**2+(move_to_y-enemy.y)**2)
+        decel = speed**2/(2*hyp)
+        enemy.x_decel = abs(decel*(move_to_x-enemy.x))/hyp
+        enemy.y_decel = abs(decel*(move_to_y-enemy.y))/hyp
+        enemy.x_speed = speed*(move_to_x-enemy.x)/hyp
+        enemy.y_speed = speed*(move_to_y-enemy.y)/hyp
+
+    if abs(enemy.x_speed) < 5:
+        enemy.x_speed = 0
+    if abs(enemy.y_speed) < 5:
+        enemy.y_speed = 0
+    return 0 if enemy.x_speed == 0 else enemy.x_speed - enemy.x_direction*enemy.x_decel*dt, \
+           0 if enemy.y_speed == 0 else enemy.y_speed - enemy.y_direction*enemy.y_decel*dt
 
 def straight(enemy, dimensions, dt, params):
     enemy.wait_to_shoot = False
@@ -111,6 +134,7 @@ def border(enemy, dimensions, dt, params):
         else:
             return 0, abs(border_speed)
 
+entities.pattern_types["MoveTo"] = move_to
 entities.pattern_types["Straight"] = straight
 entities.pattern_types["Border"] = border
 entities.pattern_types["Sweep"] = sweep

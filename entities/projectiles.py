@@ -132,7 +132,20 @@ class TargetedProjectile(Projectile):
         self._x += self._x_speed * dt
         self._y += self._y_speed * dt
 
+class DoNothing(Projectile):
+
+    targets = False
+
+    def __init__(self, ID, shooter, x, y, params):
+        super().__init__(ID, shooter, x, y)
+        self._width = 0
+        self._height = 0
+
+    def update(self, screen, dt):
+        self.despawn()
+
 entities.entity_types["Straight"] = StraightProjectile
 entities.entity_types["Sunburst"] = SunburstProjectiles
 entities.entity_types["Falling"] = FallingProjectile
 entities.entity_types["Targeted"] = TargetedProjectile
+entities.entity_types["DoNothing"] = DoNothing

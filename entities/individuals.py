@@ -102,14 +102,13 @@ class Enemy(Entity):
     def __init__(self, ID, pattern, proj):
         super().__init__(ID)
         # these need to be passed by the loader
-        self._pattern = pattern
+        self._pattern = pattern[0]
         self._pattern_params = None
-        self._projectile = proj
+        self._projectile = proj[0]
         self._projectile_params = None
         self._direction = 0
 
         self._x_speed = None
-        self._x_init = None
         self._y_speed = None
 
     # an enemy's x, y, x_speed, y_speed must be set before moving it
@@ -176,12 +175,107 @@ class Enemy(Entity):
         self._x_speed = x_speed
 
     @property
-    def x_init(self):
-        return self._x_init
-    @x_init.setter
+    def y_speed(self):
+        return self._y_speed
 
-    def x_init(self, value):
-        self._x_init = value
+    @y_speed.setter
+    def y_speed(self, y_speed):
+        self._y_speed = y_speed
+
+    @property
+    def drops(self):
+        return self._drops
+    
+    @drops.setter
+    def drops(self, drops):
+        self._drops = drops
+
+    def update(self, projs, drops, screen, dt):
+        if self.health < 0:
+            self.despawn(drops)
+        self._move(screen, dt)
+        self._attack(projs)
+
+    def despawn(self, drops):
+        super().despawn()
+
+        # spawn some drops
+        for d in self._drops:
+            drop_params = [float(d[i]) for i in range(1, len(d))]
+            drop = entities.drop_types[d[0]](self._x, self._y, drop_params)
+            drop.width = 20
+            drop.height = 20
+            drops.append(drop)
+            drop.in_list = drops
+
+class Boss(Entity):
+    def __init__(self, ID, patterns, projs):
+        """ 
+        patterns/projectiles are lists of types, and
+        pattern_params/projectile_params are lists of lists of parameters
+        """
+        super().__init__(ID)
+        self._patterns = patterns
+        self._pattern_params = None
+        self._projectiles = projs
+        self._projectile_params = None
+
+        self._health_checkpoint = 0
+        self._healths = []
+        self._pattern = self._patterns[0]
+        self._projectile = self._projectiles[0]
+        self._current = 0
+
+        self._x_speed = None
+        self._y_speed = None
+
+    @property
+    def pattern(self):
+        return self._pattern
+
+    @pattern.setter
+    def pattern(self, pattern):
+        self._pattern = pattern
+
+    @property
+    def patterns(self):
+        return self._patterns
+    
+    @patterns.setter
+    def patterns(self, patterns):
+        self._patterns = patterns
+
+    @property
+    def pattern_params(self):
+        return self._pattern_params  
+
+    @pattern_params.setter
+    def pattern_params(self, params):
+        self._pattern_params = params
+    
+    @property
+    def projectiles(self):
+        return self._projectiles
+
+    @projectiles.setter
+    def projectiles(self, projs):
+        self.projectiles = projs
+
+    @property
+    def projectile_params(self):
+        return self._projectile_params
+
+    @projectile_params.setter
+    def projectile_params(self, params):
+        self._projectile_params = params
+
+    @property
+    def x_speed(self):
+        return self._x_speed
+
+    @x_speed.setter
+    def x_speed(self, x_speed):
+        self._x_speed = x_speed
 
     @property
     def y_speed(self):
@@ -199,11 +293,43 @@ class Enemy(Entity):
     def drops(self, drops):
         self._drops = drops
 
+    def _move(self, screen, dt):
+        self._x_speed, self._y_speed = self._pattern(self, screen, dt, self._pattern_params[self._current])
+        self._direction = 0 if self._x_speed == 0 else copysign(1, float(self._x_speed))
+        self._x += self._x_speed * dt
+        self._y += self._y_speed * dt
+        self.center = self.get_center()
+
+    def _attack(self, projs):
+        if self.wait_to_shoot:
+            if self._x_speed != 0 or self._y_speed != 0:
+                return
+        shot_time = pygame.time.get_ticks()
+        # self.shot_time should be set in the loader
+        if shot_time - self.shot_time >= 1000/self.fire_rate:
+            if self._projectile == FallingProjectile:
+                proj = self._projectile(self._ID, self, self.center[0], self.center[1], self._direction, self._projectile_params[self._current])
+            else:
+                proj = self._projectile(self._ID, self, self.center[0], self.center[1], self._projectile_params[self._current])
+            projs.append(proj)
+            proj.in_list = projs
+            self.shot_time = shot_time
+
     def update(self, projs, drops, dimensions, dt):
+        if self._healths == []:
+            self._healths = [self.health-self.health/len(self._patterns)*i for i in range(1, len(self._patterns))] + [0]
         if self.health < 0:
             self.despawn(drops)
+        elif self.health < self._healths[self._health_checkpoint]:
+            self.switch_pattern()
+            self._health_checkpoint += 1
         self._move(dimensions, dt)
         self._attack(projs)
+
+    def switch_pattern(self):
+        self._current += 1
+        self._pattern = self._patterns[self._current]
+        self._projectile = self._projectiles[self._current]
 
     def despawn(self, drops):
         super().despawn()
@@ -217,36 +343,5 @@ class Enemy(Entity):
             drops.append(drop)
             drop.in_list = drops
 
-
-# class Boss(Entity):
-#     def __init__(self, ID, pattern, proj):
-#         super().__init__(ID)
-#         # these need to be passed by the loader
-#         self._pattern = pattern
-#         self._pattern_params = None
-#         self._projectile = proj
-#         self._projectile_params = None
-
-#         self._x_speed = None # in px/s
-#         self._y_speed = None
-
-#     def _move(self, screen, dt):
-#         screen_size = screen.get_size()
-#         self._x_speed, self._y_speed = self._pattern(self, screen, 200)
-#         self._x += self._x_speed * dt
-#         self._y += self._y_speed * dt
-
-#     def _attack(self, projs):
-#         # proj = StraightProjectile(self._ID, self._x, self._y, 0, 200)
-#         proj = (self._ID, self._x + self._width/2, self._y + self._height/2, 50, 100, sign(self._x_speed))
-#         proj.health = 5
-#         proj.width = 5
-#         proj.height = 5
-#         projs.append(proj)
-
-#     def update(self, projs, screen, dt):
-#         self._move(screen, dt)
-#         self._attack(projs)
-
 entities.entity_types["Enemy"] = Enemy
-# entities.entity_types["Boss"] = Boss
+entities.entity_types["Boss"] = Boss
