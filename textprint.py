@@ -5,8 +5,9 @@ class TextPrint:
         self.reset()
         self.font = pygame.font.Font(None, 20)
 
-    def print_text(self, screen, textString):
-        textBitmap = self.font.render(textString, True, (0, 0, 0))
+    def print_text(self, screen, textString, colour):
+        # colour is an RGB tuple
+        textBitmap = self.font.render(textString, True, colour)
         screen.blit(textBitmap, [self.x, self.y])
         self.y += self.line_height
         

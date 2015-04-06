@@ -35,7 +35,7 @@ class Main_Menu(Interface):
 
         return True
 
-    def draw(self, screen):
+    def draw(self, screen, clock=None):
         screen.fill((255, 255, 255))
         for button in self.buttons:
             button.draw(screen)

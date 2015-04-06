@@ -28,8 +28,12 @@ class Interface:
         """
         pass
         
+<<<<<<< Updated upstream
     def draw(self, screen):
         """
         Draws Interface to the screen
         """
+=======
+    def draw(self, screen, clock=None):
+>>>>>>> Stashed changes
         pass

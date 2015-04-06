@@ -73,7 +73,7 @@ class Player(Entity):
             hyp = sqrt(x_factor**2 + y_factor**2)
             shot_time = pygame.time.get_ticks()
             if shot_time - self.shot_time >= 500/hyp:
-                proj = StraightProjectile(self._ID, center[0], center[1], \
+                proj = StraightProjectile(self._ID, self, center[0], center[1], \
                     (5, self.proj_size, self.proj_size, x_factor*100, y_factor*100))
                 proj.color = self._color
                 projs.append(proj)
@@ -131,9 +131,9 @@ class Enemy(Entity):
         # self.shot_time should be set in the loader
         if shot_time - self.shot_time >= 1000/self.fire_rate:
             if self._projectile == FallingProjectile:
-                proj = self._projectile(self._ID, self.center[0], self.center[1], self._direction, self._projectile_params)
+                proj = self._projectile(self._ID, self, self.center[0], self.center[1], self._direction, self._projectile_params)
             else:
-                proj = self._projectile(self._ID, self.center[0], self.center[1], self._projectile_params)
+                proj = self._projectile(self._ID, self, self.center[0], self.center[1], self._projectile_params)
             projs.append(proj)
             proj.in_list = projs
             self.shot_time = shot_time
