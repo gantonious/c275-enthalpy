@@ -40,13 +40,14 @@ class Level_Select(Interface):
         locked_players = []
 
         for selector in self.selectors:
-            if selector.player == self.players[0] and selector.update()[1] == True:
+            update_status = selector.update()
+            if selector.player == self.players[0] and update_status[1] == True:
                 locked = True
                 locked_players.append(selector.player)
                 selector.player.color = CharacterSelect.COLORS[selector.color_selection]
-            elif selector.player == self.players[0] and selector.update()[0] == 0:
+            elif selector.player == self.players[0] and update_status[0] == 0:
                 not_joined = True
-            elif selector.update()[1] == True:
+            elif update_status == True:
                 locked_players.append(selector.player)
                 selector.player.color = CharacterSelect.COLORS[selector.color_selection]
 

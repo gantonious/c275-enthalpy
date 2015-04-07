@@ -143,7 +143,7 @@ class CharacterSelect:
         return (-1, False)
 
     def vertical_slide(self):
-        move_factor = 10*(self.ID + 1) # let me come back to you on that
+        move_factor = 10
         if abs(self.height - self.target_height) < move_factor:
             self.height = self.target_height
             self.animating = False
