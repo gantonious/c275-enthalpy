@@ -6,8 +6,8 @@ from drawing import *
 from elements import *
 
 class Pause_Menu(Interface):
-    def __init__(self, players, width, height):
-        super().__init__(players, width, height)
+    def __init__(self, players, width, height, params):
+        super().__init__(players, width, height, params)
         self.element_init()
         time.sleep(0.15) # button debounce
 
@@ -48,9 +48,9 @@ class Pause_Menu(Interface):
 
             if self.players[0].get_input()[5]:
                 if self.selected_button.event == None:
-                    return (1, self.selected_button.event)
+                    return (1, self.selected_button.event, [])
                 else:
-                    return (2, self.selected_button.event)
+                    return (2, self.selected_button.event, [])
 
         return True
 

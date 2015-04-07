@@ -6,6 +6,7 @@ import interfaces
 from interfaces.main_game import Main_Game
 from interfaces.main_menu import Main_Menu
 from interfaces.pause_menu import Pause_Menu
+from interfaces.level_select import Level_Select
 
 class GUI:
     """
@@ -106,7 +107,7 @@ class GUI:
                     if interface_status[0] == 0:
                         # if we didnt kill previous interface, pause its thread
                         self.interfaces[-1].pause_thread()
-                    self.add_interface(interfaces.interface_types[interface_status[1]](self.players, self.width, self.height))
+                    self.add_interface(interfaces.interface_types[interface_status[1]](self.players, self.width, self.height, interface_status[2]))
                 if self.interfaces != []:
                     # resume thread of interface with current priority
                     self.interfaces[-1].resume_thread()

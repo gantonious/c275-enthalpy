@@ -6,8 +6,8 @@ from drawing import *
 from elements import *
 
 class Main_Menu(Interface):
-    def __init__(self, players, width, height):
-        super().__init__(players, width, height)
+    def __init__(self, players, width, height, params):
+        super().__init__(players, width, height, params)
         self.element_init()
         time.sleep(0.15) # button debounce
 
@@ -24,7 +24,7 @@ class Main_Menu(Interface):
 
         button_x = (self.width - button_width) / 2
         button_y = (self.height - num_buttons * button_height - (num_buttons - 1) * y_spacing) / 2
-        self.buttons.append(Button(button_x, button_y, button_width, button_height, "main_game", "play"))
+        self.buttons.append(Button(button_x, button_y, button_width, button_height, "level_select", "play"))
         self.buttons.append(Button(button_x, button_y + y_spacing + button_height, button_width, button_height, None, "exit"))
         self.buttons[0].selected = 1
         self.selected_button = self.buttons[0]
@@ -47,7 +47,7 @@ class Main_Menu(Interface):
                 self.selected_button = self.buttons[1]
 
             if self.players[0].get_input()[5]:
-                return (1, self.selected_button.event)
+                return (1, self.selected_button.event, [])
 
         return True
 

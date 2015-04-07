@@ -1,5 +1,5 @@
 class Interface:
-    def __init__(self, players, width, height):
+    def __init__(self, players, width, height, params):
         self.players = players
         self.width = width
         self.height = height
@@ -23,11 +23,12 @@ class Interface:
         Returns: 
 
         True - Keep this interface alive and do nothing else
-        (Int, Interface) - Add interface Interface with highest priority, 
+        (Int, Interface, [Prams]) - Add interface Interface with highest priority, 
         Int represents how many interfaces to kill from highest priority to least priority:
         Int = 0 preserves all interfaces
         Int = 1 kills current interface
         Int = 2 kills current and its parent interface and so on...
+        Prams - contains any extra paramters needed by GUI to initialize the new interface
         """
         pass
         

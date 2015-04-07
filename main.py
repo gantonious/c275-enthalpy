@@ -12,7 +12,7 @@ main_gui = GUI(*SCREEN_SIZE)
 main_gui.set_caption("enthalPy")
 main_gui.set_icon(pygame.image.load("assets/icon.jpg").convert())
 
-menu = interfaces.interface_types["main_menu"](main_gui.players, SCREEN_SIZE[0], SCREEN_SIZE[1])
+menu = interfaces.interface_types["main_menu"](main_gui.players, SCREEN_SIZE[0], SCREEN_SIZE[1], [])
 
 main_gui.add_interface(menu)
 main_gui.run()

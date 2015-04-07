@@ -35,11 +35,11 @@ class Player(Entity):
 
     def _map_joystick(self):
         if self._joystick.get_name() == "Wireless Controller":
-            self._map = [0, 1, 2, 3, 4, 1, 9] # PS4 controller
+            self._map = [0, 1, 2, 3, 4, 1, 9, 2] # PS4 controller
         elif self._joystick.get_name() == "PLAYSTATION(R)3 Controller":
-            self._map = [0, 1, 2, 3, 11, 1, 9] # PS3 controller
+            self._map = [0, 1, 2, 3, 11, 1, 9, 2] # PS3 controller
         else:
-            self._map = [0, 1, 2, 3, 11, 1, 9] # default
+            self._map = [0, 1, 2, 2, 2, 0, 3, 1] # default
 
     def _move(self, dimensions, dt):
         joy_input = self.get_input()
@@ -86,7 +86,8 @@ class Player(Entity):
                 self._joystick.get_axis(self._map[3]), \
                 self._joystick.get_button(self._map[4]), \
                 self._joystick.get_button(self._map[5]), \
-                self._joystick.get_button(self._map[6])]
+                self._joystick.get_button(self._map[6]), \
+                self._joystick.get_button(self._map[7])]
 
     def get_init(self):
         return self._joystick.get_init()

@@ -9,13 +9,14 @@ from drawing import *
 from textprint import TextPrint
 
 class Main_Game(Interface):
-    def __init__(self, players, width, height):
+    def __init__(self, players, width, height, params):
         self.projs = []
         self.enemies = []
         self.drops = []
-        super().__init__(players, width, height)
+        super().__init__(players, width, height, params)
         self.printer = TextPrint()
         self.play_area = [0, 0, self.width, self.height*0.9]
+        self.players = params[0]
         self.reset()
 
     def reset(self):
@@ -82,10 +83,10 @@ class Main_Game(Interface):
             self.loader.set_clear(True)
 
         if self.players[0].health < 0:
-            return (1, "main_menu")
+            return (1, "main_menu", [])
             
         if self.players[0].get_input()[6]:
-            return (0, "pause_menu")
+            return (0, "pause_menu", [])
 
         return True
 
@@ -122,8 +123,6 @@ class Main_Game(Interface):
                 draw_entity(screen, drop)
             else:
                 drop.update()
-
-        self.proj_tree.draw_tree(screen)
 
         self.printer.reset()
         self.printer.print_text(screen, "FPS: {}".format(clock.get_fps()), (0, 0, 0))

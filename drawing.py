@@ -23,7 +23,7 @@ def draw_health_bar(screen, entity):
 	y = entity_dimensions[1] - height*2
 
 	pygame.draw.rect(screen, entity.color, (x, y, width, height), 1)
-	pygame.draw.rect(screen, entity.color, (x, y, health[0] * width / health[1], height))
+	pygame.draw.rect(screen, entity.color, (x, y, max(0, health[0] * width / health[1]), height))
 
 def draw_hit_box(screen, entity):
     pygame.draw.rect(screen, entity.color, entity.get_coords(), 2)
