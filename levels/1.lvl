@@ -3,24 +3,58 @@ Name: Example
 
 Enemies:
 
-# Enemy 600 -10 100 20 20 20 2
-# *FadeIn 100 50 30
-# **Falling 5 5 5 400 100
+# Enemy 600 200 100 20 20 20 5
+# *MoveTo 100 100 300
+# **Sunburst 5 5 5 200 8 5
 
-Delay 1000
+# Clear
 
-Enemy 600 200 100 20 20 20 2
-*Sweep 200 1000
-**Targeted 5 5 5 400 0
+# Enemy 600 200 100 20 20 20 2
+# *Sweep 200 1000
+# **Targeted 5 5 5 400 0
+# ***Score 100
 
 # Enemy 600 -10 100 20 20 20 2
 # *Straight 200 200
 # **Falling 5 5 5 400 100
 
-Clear
+# Delay 1000
 
-Enemy 600 200 100 20 20 20 5
+# Enemy 600 200 100 20 20 20 5
+# *Border 200
+# **Straight 5 5 5 200 200
+
+Boss 900 -50 5000 50 50 50 15
+*MoveTo 600 300 400
+**Sunburst 5 5 5 200 8 5
+*MoveTo 100 100 400
+**DoNothing
+*MoveTo 1100 100 400
+**Falling 5 5 5 400 100
 *Border 200
-**Straight 5 5 5 200 200
+**Targeted 5 5 5 400 0
+***ShotSize 2 10
+
+Boss 600 -50 5000 50 50 50 15
+*MoveTo 300 300 400
+**Sunburst 5 5 5 200 8 5
+*MoveTo 100 100 400
+**DoNothing
+*MoveTo 1100 100 400
+**Falling 5 5 5 400 100
+*Border 200
+**Targeted 5 5 5 400 0
+***ShotSize 2 10
+
+Boss 300 -50 5000 50 50 50 15
+*MoveTo 900 300 400
+**Sunburst 5 5 5 200 8 5
+*MoveTo 100 100 400
+**DoNothing
+*MoveTo 1100 100 400
+**Falling 5 5 5 400 100
+*Border 200
+**Targeted 5 5 5 400 0
+***ShotSize 2 10
 
 Enemies end
