@@ -83,6 +83,7 @@ class Entity:
     @property
     def color(self):
         return self._color
+        
     @color.setter
     def color(self, color):
         self._color = color
@@ -132,7 +133,7 @@ class Entity:
         return False
 
     def update(self, dimensions):
-        if self.health < 0 and self.on_screen(dimensions):
+        if self.health <= 0 and self.on_screen(dimensions):
             self.despawn()
 
     def despawn(self):
