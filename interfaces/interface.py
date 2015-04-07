@@ -3,6 +3,7 @@ class Interface:
         self.players = players
         self.width = width
         self.height = height
+        self.threshold = 0.08
 
     def reset(self):
         pass

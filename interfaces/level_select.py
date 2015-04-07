@@ -47,7 +47,7 @@ class Level_Select(Interface):
                 selector.player.color = CharacterSelect.COLORS[selector.color_selection]
             elif selector.player == self.players[0] and update_status[0] == 0:
                 not_joined = True
-            elif update_status == True:
+            elif update_status[1] == True:
                 locked_players.append(selector.player)
                 selector.player.color = CharacterSelect.COLORS[selector.color_selection]
 

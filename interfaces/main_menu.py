@@ -37,11 +37,11 @@ class Main_Menu(Interface):
 
     def update(self, dt):
         if self.players:
-            if self.players[0].get_input()[3] < -0.08 or self.players[0].get_input()[1] < -0.08:
+            if self.players[0].get_input()[3] < -self.threshold or self.players[0].get_input()[1] < -self.threshold:
                 self.buttons[0].selected = 1
                 self.buttons[1].selected = 0
                 self.selected_button = self.buttons[0]
-            elif self.players[0].get_input()[3] > 0.08 or self.players[0].get_input()[1] > 0.08:
+            elif self.players[0].get_input()[3] > self.threshold or self.players[0].get_input()[1] > self.threshold:
                 self.buttons[0].selected = 0
                 self.buttons[1].selected = 1
                 self.selected_button = self.buttons[1]

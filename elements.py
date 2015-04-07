@@ -19,12 +19,13 @@ class Button:
         self.height = height
         self.event = event
         self.selected = 0
-        self.color = (BLACK, RED)
+        self.color = (BLACK, RED, WHITE)
         self.font_size = 40
         self.font = pygame.font.SysFont("Roboto", self.font_size)
         self.caption = caption
 
     def draw(self, screen):
+        pygame.draw.rect(screen, self.color[2], (self.x, self.y, self.width, self.height))
         pygame.draw.rect(screen, self.color[self.selected], (self.x, self.y, self.width, self.height), 2)
         textBitmap = self.font.render(self.caption, True, (0, 0, 0))
         x = (self.width - textBitmap.get_size()[0]) / 2 + self.x
@@ -99,6 +100,7 @@ class CharacterSelect:
         self.color_selection = 0
         self.stick_debounce = [0, 250]
         self.buttons_debounce = {5: 0, 7: 0}
+        self.threshold = 0.08
         self.animating = False
 
     def update(self):
@@ -116,10 +118,10 @@ class CharacterSelect:
                 self.buttons_debounce[5] = 1
             elif self.state == 1:
                 if pygame.time.get_ticks() - self.stick_debounce[0] > self.stick_debounce[1]:
-                    if self.player.get_input()[0] < -0.08 or self.player.get_input()[2] < -0.08:
+                    if self.player.get_input()[0] < -self.threshold or self.player.get_input()[2] < -self.threshold:
                         self.color_selection = (self.color_selection - 1) % len(CharacterSelect.COLORS)
                         self.stick_debounce[0] = pygame.time.get_ticks()
-                    elif self.player.get_input()[0] > 0.08 or self.player.get_input()[2] > 0.08:
+                    elif self.player.get_input()[0] > self.threshold or self.player.get_input()[2] > self.threshold:
                         self.color_selection = (self.color_selection + 1) % len(CharacterSelect.COLORS)
                         self.stick_debounce[0] = pygame.time.get_ticks()
                 if self.player.get_input()[5] and not self.buttons_debounce[5]:

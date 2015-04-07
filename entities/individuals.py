@@ -36,7 +36,7 @@ class Player(Entity):
         if self._joystick.get_name() == "Wireless Controller":
             self._map = [0, 1, 2, 3, 4, 1, 9, 2] # PS4 controller
         elif self._joystick.get_name() == "PLAYSTATION(R)3 Controller":
-            self._map = [0, 1, 2, 3, 11, 1, 9, 2] # PS3 controller
+            self._map = [0, 1, 2, 3, 11, 14, 3, 13] # PS3 controller
         else:
             self._map = [0, 1, 2, 2, 2, 0, 3, 1] # default
 

@@ -20,18 +20,16 @@ class Main_Game(Interface):
         self.reset()
 
     def reset(self):
-        for player in self.players:
-            player.health = 100
-            player.max_health = 100
-            player.width = 30
-            player.height = 30
-            player.hitbox = 8
-            if player.ID == 0:
-                player.x = 400
-                player.y = 600
-            if player.ID == 1:
-                player.x = 800
-                player.y = 600
+        x_spacing = self.width * 0.05
+        
+        for player in enumerate(self.players):
+            player[1].health = 100
+            player[1].max_health = 100
+            player[1].width = 30
+            player[1].height = 30
+            player[1].hitbox = 8  
+            player[1].x = (self.width - len(self.players) * player[1].width - (len(self.players) - 1) * x_spacing) / 2 + player[0] * (player[1].width + x_spacing)
+            player[1].y = 600
 
         self.thread = Thread(target=self.loader_init)
         self.loaded = False

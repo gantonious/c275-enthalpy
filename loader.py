@@ -128,7 +128,7 @@ class Loader:
 
             # create entity with the defined properties
             entity = entities.entity_types[line[0]] \
-                    (2, [entities.pattern_types[move_list[0][0]]], \
+                    (100, [entities.pattern_types[move_list[0][0]]], \
                     [entities.entity_types[proj_list[0][0]]])
             entity.x = int(line[1])
             entity.y = int(line[2])
