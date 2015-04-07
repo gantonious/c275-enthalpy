@@ -21,10 +21,10 @@ class Button:
         self.selected = 0
         self.color = (BLACK, RED, WHITE)
         self.font_size = 40
-        self.font = pygame.font.SysFont("Roboto", self.font_size)
         self.caption = caption
 
     def draw(self, screen):
+        self.font = pygame.font.Font("assets/Roboto-Thin.ttf", self.font_size)
         pygame.draw.rect(screen, self.color[2], (self.x, self.y, self.width, self.height))
         pygame.draw.rect(screen, self.color[self.selected], (self.x, self.y, self.width, self.height), 2)
         textBitmap = self.font.render(self.caption, True, (0, 0, 0))
@@ -33,9 +33,9 @@ class Button:
         screen.blit(textBitmap, [x, y])
 
 class TextBox:
-    def __init__(self, font, font_size, caption=""):
+    def __init__(self, font_size, caption=""):
         self.color = BLACK
-        self.font = pygame.font.SysFont(font, font_size)
+        self.font_size = font_size
         self.caption = caption
 
     @property
@@ -63,6 +63,15 @@ class TextBox:
         # render text again when we update it
         self._caption = caption
         self.render_text()
+
+    @property
+    def font_size(self):
+        return self._font_size
+
+    @font_size.setter
+    def font_size(self, font_size):
+        self._font_size = font_size
+        self.font = pygame.font.Font("assets/Roboto-Thin.ttf", self.font_size)
 
     def render_text(self):
         self.textBitmap = self.font.render(self.caption, True, (0, 0, 0))
@@ -159,14 +168,14 @@ class CharacterSelect:
     def draw(self, screen):
         pygame.draw.rect(screen, BLACK, (self.x, self.y, self.width, self.height), 2)
         font_size = 30
-        font = pygame.font.SysFont("Roboto", font_size) 
+        font = pygame.font.Font("assets/Roboto-Thin.ttf", font_size)
         textBitmap = font.render("player " + str(self.ID), True, (0, 0, 0)) 
         screen.blit(textBitmap, \
                     [(self.width - textBitmap.get_size()[0]) / 2 + self.x, \
                       self.height * 0.1 + self.y])
         if self.state == 0:
             font_size = 20
-            font = pygame.font.SysFont("Roboto", font_size) 
+            font = pygame.font.Font("assets/Roboto-Thin.ttf", font_size)
             textBitmap = font.render("press x to join", True, (0, 0, 0)) 
             screen.blit(textBitmap, \
                         [(self.width - textBitmap.get_size()[0]) / 2  + self.x, \
@@ -176,14 +185,14 @@ class CharacterSelect:
                             (self.width*0.35 + self.x, self.height*0.4 + self.y, \
                              self.width*0.3, self.width*0.3), 2)
             font_size = 20
-            font = pygame.font.SysFont("Roboto", font_size) 
+            font = pygame.font.Font("assets/Roboto-Thin.ttf", font_size)
             textBitmap = font.render("<< select a color >>", True, (0, 0, 0)) 
             screen.blit(textBitmap, \
                         [(self.width - textBitmap.get_size()[0]) / 2 + self.x, \
                           self.height * 0.8 + self.y])
         elif self.state == 2:
             font_size = 18
-            font = pygame.font.SysFont("Roboto", font_size) 
+            font = pygame.font.Font("assets/Roboto-Thin.ttf", font_size)
             textBitmap = font.render("ready, press o to unready", True, (0, 0, 0)) 
             screen.blit(textBitmap, \
                         [(self.width - textBitmap.get_size()[0]) / 2 + self.x, \

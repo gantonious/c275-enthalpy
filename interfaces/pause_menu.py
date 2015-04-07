@@ -31,7 +31,7 @@ class Pause_Menu(Interface):
 
         # static element init
         self.static_elements=[]
-        self.static_elements.append(TextBox("Roboto", 40, "paused"))
+        self.static_elements.append(TextBox(40, "paused"))
         self.static_elements[0].x = (self.width - self.static_elements[0].get_dimensions()[0]) / 2
         self.static_elements[0].y = self.height * 0.2
 

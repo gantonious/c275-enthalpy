@@ -18,7 +18,7 @@ class Level_Select(Interface):
         self.buttons = []
         # static element init
         self.static_elements=[]
-        self.static_elements.append(TextBox("Roboto", 40, "select level"))
+        self.static_elements.append(TextBox(40, "select level"))
         self.static_elements[0].x = (self.width - self.static_elements[0].get_dimensions()[0]) / 2
         self.static_elements[0].y = self.height * 0.07
 
