@@ -15,12 +15,11 @@ class Player(Entity):
     def __init__(self, ID, joystick, damage=5, color=RED):
         super().__init__(ID, damage, color)
         self.score = 0
-        self.proj_size = 5
+        self.proj_size = 10
         self._hitbox = 5
         self._sensitivity = 25 # in px/s
         self._shoot_sensitivity = 20
         self._slowdown = 10
-        self.shot_time = 0
         self._threshold = 0.08
         self._joystick = joystick # grabs this players joystick object
         self._map = [] # key bindings
@@ -71,13 +70,11 @@ class Player(Entity):
             y_factor = self._shoot_sensitivity*joy_input[3]
             hyp = sqrt(x_factor**2 + y_factor**2)
             shot_time = pygame.time.get_ticks()
-            if shot_time - self.shot_time >= 500/hyp:
-                proj = StraightProjectile(self._ID, self, center[0], center[1], \
-                    (5, self.proj_size, self.proj_size, x_factor*100, y_factor*100))
-                proj.color = self._color
-                projs.append(proj)
-                proj.in_list = projs
-                self.shot_time = shot_time
+            proj = StraightProjectile(self._ID, self, center[0], center[1], \
+                (5, self.proj_size, self.proj_size, x_factor*1000/hyp, y_factor*1000/hyp))
+            proj.color = self._color
+            projs.append(proj)
+            proj.in_list = projs
 
     def get_input(self):
         return [self._joystick.get_axis(self._map[0]), \
