@@ -139,6 +139,7 @@ class DoNothing(Projectile):
         super().__init__(ID, shooter, x, y)
         self._width = 0
         self._height = 0
+        self._health = 0
 
     def update(self, screen, dt):
         self.despawn()
