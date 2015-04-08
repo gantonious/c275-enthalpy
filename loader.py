@@ -38,7 +38,7 @@ class Loader:
                 raise Exception("Expected level name")
 
         # Get the level name
-        line = line.lstrip("Name: ")
+        line = line[6:]
         self.level_name = line
 
         line = lvl.readline()
@@ -48,7 +48,7 @@ class Loader:
                 raise Exception("Expected next level name")
 
         # Get the next level name
-        line = line.lstrip("Next level: ")
+        line = line[12:]
         if line == "None":
             self.next_level = None
         else:
