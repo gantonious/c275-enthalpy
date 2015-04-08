@@ -3,6 +3,7 @@ import entities, time
 class Loader:
     def __init__(self):
         self._keep_going = True
+        self.loaded_header = False
         self.finished = False
         self.players = None # pass the list of players to loader pls
         self.enemies = None # also the list of enemies pls thx
@@ -18,7 +19,7 @@ class Loader:
 
     def load(self, level):
         with open(level, 'r') as lvl:
-            self.load_header(lvl, self.interface)
+            self.load_header(lvl)
             while self.game_is_running:
                 if self.paused:
                     continue
@@ -26,19 +27,8 @@ class Loader:
                     break
         self.finished = True
 
-    def load_header(self, lvl, interface):
+    def load_header(self, lvl):
         # load assets and important information
-
-        # level number
-        line = lvl.readline()
-        while line.find("Level: ") < 0:
-            line = lvl.readline()
-            if line == "":
-                raise Exception("Expected level number")
-
-        # Get the level number
-        line = line.lstrip("Level: ")
-        self.interface.level_num = int(line)
 
         # level name
         line = lvl.readline()
@@ -49,7 +39,20 @@ class Loader:
 
         # Get the level name
         line = line.lstrip("Name: ")
-        self.interface.level_name = line
+        self.level_name = line
+
+        line = lvl.readline()
+        while line.find("Next level: ") < 0:
+            line = lvl.readline()
+            if line == "":
+                raise Exception("Expected next level name")
+
+        # Get the next level name
+        line = line.lstrip("Next level: ")
+        if line == "None":
+            self.next_level = None
+        else:
+            self.next_level = line
 
         # enemies block
         line = lvl.readline()
@@ -57,6 +60,8 @@ class Loader:
             line = lvl.readline()
             if line == "":
                 raise Exception("Expected enemies start")
+
+        self.loaded_header = True
 
     def load_next(self, lvl):
         # load enemies as they happen
