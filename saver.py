@@ -22,15 +22,23 @@ class Saver:
         self.save_file = line
         self.save_exists = True
 
-    def save(self, players, level):
+    def save(self, level):
         if self.save_exists:
-            f = open(self.save_file, "w+") # this should empty the save file by default
-            f.write(level)
-            f.close()
+            try:
+                f = open("saves/{}".format(self.save_file), "w+") # this should empty the save file by default
+                f.write(level)
+                f.close()
+                return True
+            except:
+                print("Saving failed! Continuing without saving")
 
         count = 0
         while os.path.isfile("saves/{}.sav".format(count)):
             count += 1
-        f = open("saves/{}.sav".format(count))
-        f.write(level)
-        f.close()
+        try:
+            f = open("saves/{}.sav".format(count))
+            f.write(level)
+            f.close()
+        except:
+            print("Saving failed! Continuing without saving")
+        self.save_exists = True

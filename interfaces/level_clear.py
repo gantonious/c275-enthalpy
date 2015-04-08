@@ -43,6 +43,8 @@ class Level_Clear(Interface):
                 return (1, "main_game", [self.players, "levels/" + self.next_level])
             else:
                 return (1, "main_menu", [])
+            saver = Saver()
+            saver.save(self.next_level)
             
         return True
 

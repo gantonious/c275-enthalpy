@@ -120,8 +120,8 @@ class Entity:
             self._y > dimensions[1] and self._y + self._height < dimensions[1] + dimensions[3]
 
     def collide(self, target):
-        if target.ID == self._ID:
-            return 0
+        if target.ID == self._ID or target.hitbox == 0:
+            return False
         coords = target.get_coords()
         if (self._x + self._width > coords[0] and \
             self._x < coords[0] + coords[2] and \
