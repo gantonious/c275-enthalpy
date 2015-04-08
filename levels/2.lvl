@@ -1,5 +1,5 @@
-Name: Example1
-Next level: 2.lvl
+Name: Example2
+Next level: None
 
 Enemies:
 
@@ -26,28 +26,6 @@ Enemies:
 
 Boss 900 -50 5000 50 50 50 15
 *MoveTo 600 300 400
-**Sunburst 5 5 5 200 8 5
-*MoveTo 100 100 400
-**DoNothing
-*MoveTo 1100 100 400
-**Falling 5 5 5 400 100
-*Border 200
-**Targeted 5 5 5 400 0
-***ShotSize 2 10
-
-Boss 600 -50 5000 50 50 50 15
-*MoveTo 300 300 400
-**Sunburst 5 5 5 200 8 5
-*MoveTo 100 100 400
-**DoNothing
-*MoveTo 1100 100 400
-**Falling 5 5 5 400 100
-*Border 200
-**Targeted 5 5 5 400 0
-***ShotSize 2 10
-
-Boss 300 -50 5000 50 50 50 15
-*MoveTo 900 300 400
 **Sunburst 5 5 5 200 8 5
 *MoveTo 100 100 400
 **DoNothing

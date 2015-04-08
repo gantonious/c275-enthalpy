@@ -32,6 +32,9 @@ class Main_Menu(Interface):
         self.static_elements.append(TextBox(40, "Welcome to EnthalPy"))
         self.static_elements[0].x = (self.width - self.static_elements[0].get_dimensions()[0]) / 2
         self.static_elements[0].y = self.height * 0.2
+        self.static_elements.append(TextBox(20, "Select"))
+        self.static_elements[1].x = self.width - self.static_elements[1].get_dimensions()[0]*1.5
+        self.static_elements[1].y = self.height * 0.94
 
     def update(self, dt):
         if self.players:

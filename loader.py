@@ -48,7 +48,7 @@ class Loader:
                 raise Exception("Expected next level name")
 
         # Get the next level name
-        line = line[12:]
+        line = line[12:].rstrip()
         if line == "None":
             self.next_level = None
         else:

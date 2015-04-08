@@ -116,8 +116,8 @@ class Entity:
             # this is a very bad assumption
             return True
 
-        return self._x + self._width > dimensions[0] and self._x < dimensions[0] + dimensions[2] and \
-            self._y + self._height > dimensions[1] and self._y < dimensions[1] + dimensions[3]
+        return self._x > dimensions[0] and self._x + self.width < dimensions[0] + dimensions[2] and \
+            self._y > dimensions[1] and self._y + self._height < dimensions[1] + dimensions[3]
 
     def collide(self, target):
         if target.ID == self._ID:

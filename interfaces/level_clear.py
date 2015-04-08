@@ -37,11 +37,10 @@ class Level_Clear(Interface):
         for player in enumerate(score_sorted_players):
             self.static_elements.append(CharacterClearStatus(clear_status_x, clear_status_y + player[0] * (y_spacing + clear_status_height), \
                                                             clear_status_width, clear_status_height, player[1], player[0] + 1))
-
     def update(self, dt):
         if self.players[0].get_debounced_input(5):
             if self.next_level != None:
-                return (1, "main_game", [self.players, self.next_level])
+                return (1, "main_game", [self.players, "levels/" + self.next_level])
             else:
                 return (1, "main_menu", [])
             
@@ -52,8 +51,6 @@ class Level_Clear(Interface):
         for button in self.buttons:
             button.draw(screen)
         for element in self.static_elements:
-            element.draw(screen)
-
-    
+            element.draw(screen)   
 
 interfaces.interface_types["level_clear"] = Level_Clear
