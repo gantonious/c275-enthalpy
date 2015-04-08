@@ -25,6 +25,7 @@ class Player(Entity):
         self._map = [] # key bindings
         joystick.init() # initializes joysticks
         self._check_init() # makes sure joystick initialized succesfully
+        self._button_debounce = [1 for i in range(len(self._map))]
     
     def _check_init(self):
         if self._joystick.get_init():
@@ -60,7 +61,6 @@ class Player(Entity):
         self.center = self.get_center()
         #self._draw(screen)
 
-
     def _shoot(self, projs):
         joy_input = self.get_input()
         center = self.get_center()
@@ -77,6 +77,9 @@ class Player(Entity):
             proj.in_list = projs
 
     def get_input(self):
+        """
+        Returns a list of inputs for each joystick binding
+        """
         return [self._joystick.get_axis(self._map[0]), \
                 self._joystick.get_axis(self._map[1]), \
                 self._joystick.get_axis(self._map[2]), \
@@ -85,6 +88,20 @@ class Player(Entity):
                 self._joystick.get_button(self._map[5]), \
                 self._joystick.get_button(self._map[6]), \
                 self._joystick.get_button(self._map[7])]
+
+    def get_debounced_input(self, index):
+        """
+        Returns the debounced input of the specified joystick binding
+        """
+        raw_input = self.get_input()[index]
+
+        if self._button_debounce[index]:
+            debounced_input = 0
+        else:
+            debounced_input = raw_input
+        self._button_debounce[index] = raw_input
+
+        return debounced_input
 
     def get_init(self):
         return self._joystick.get_init()

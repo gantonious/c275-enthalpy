@@ -108,23 +108,15 @@ class CharacterSelect:
         self.state = 0
         self.color_selection = 0
         self.stick_debounce = [0, 250]
-        self.buttons_debounce = {5: 0, 7: 0}
         self.threshold = 0.08
         self.animating = False
 
     def update(self):
         self.vertical_slide()
 
-        if not self.player.get_input()[5]:
-            self.buttons_debounce[5] = 0 
-        
-        if not self.player.get_input()[7]:
-            self.buttons_debounce[7] = 0 
-
         if not self.animating:
-            if self.state == 0 and self.player.get_input()[5] and not self.buttons_debounce[5]:
+            if self.state == 0 and self.player.get_debounced_input(5):
                 self.state = 1
-                self.buttons_debounce[5] = 1
             elif self.state == 1:
                 if pygame.time.get_ticks() - self.stick_debounce[0] > self.stick_debounce[1]:
                     if self.player.get_input()[0] < -self.threshold or self.player.get_input()[2] < -self.threshold:
@@ -133,22 +125,19 @@ class CharacterSelect:
                     elif self.player.get_input()[0] > self.threshold or self.player.get_input()[2] > self.threshold:
                         self.color_selection = (self.color_selection + 1) % len(CharacterSelect.COLORS)
                         self.stick_debounce[0] = pygame.time.get_ticks()
-                if self.player.get_input()[5] and not self.buttons_debounce[5]:
+                if self.player.get_debounced_input(5):
                     self.target_height = self.height * 0.5
                     self.state = 2
-                    self.buttons_debounce[5] = 1
-                elif self.player.get_input()[7] and not self.buttons_debounce[7]:
+                elif self.player.get_debounced_input(7):
                     self.state = 0
-                    self.buttons_debounce[7] = 1
             elif self.state == 2:
-                if self.player.get_input()[7] and not self.buttons_debounce[7]:
+                if self.player.get_debounced_input(7):
                     self.target_height = self.height * 2
                     self.state = 1
-                    self.buttons_debounce[7] = 1
 
-        if self.state == 2 and not self.buttons_debounce[5]:
+        if self.state == 2:
             return (self.state, True)
-        elif not self.buttons_debounce[7]:
+        else:
             return (self.state, False)
 
         return (-1, False)
@@ -172,7 +161,7 @@ class CharacterSelect:
         textBitmap = font.render("player " + str(self.ID), True, (0, 0, 0)) 
         screen.blit(textBitmap, \
                     [(self.width - textBitmap.get_size()[0]) / 2 + self.x, \
-                      self.height * 0.1 + self.y])
+                      textBitmap.get_size()[1] * 0.6 + self.y])
         if self.state == 0:
             font_size = 20
             font = pygame.font.Font("assets/Roboto-Thin.ttf", font_size)
@@ -196,5 +185,31 @@ class CharacterSelect:
             textBitmap = font.render("ready, press o to unready", True, (0, 0, 0)) 
             screen.blit(textBitmap, \
                         [(self.width - textBitmap.get_size()[0]) / 2 + self.x, \
-                          self.height * 0.6 + self.y])
+                          self.height * 0.7 + self.y])
+
+class CharacterClearStatus:
+    def __init__(self, x, y, width, height, player, ID):
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
+        self.player = player
+        self.ID = ID
+
+    def draw(self, screen):
+        pygame.draw.rect(screen, (255, 255, 255), (self.x, self.y, self.width, self.height))
+        pygame.draw.rect(screen, self.player.color, (self.x, self.y, self.width, self.height), 2)
+        font_size = 40
+        font = pygame.font.Font("assets/Roboto-Thin.ttf", font_size)
+        textBitmap = font.render("player " + str(self.ID), True, (0, 0, 0)) 
+        screen.blit(textBitmap, \
+                    [self.width * 0.05 + self.x, \
+                      (self.height - textBitmap.get_size()[1]) / 2 + self.y])
+        font_size = 25
+        font = pygame.font.Font("assets/Roboto-Thin.ttf", font_size)
+        textBitmap = font.render("score: " + str(self.player.score), True, (0, 0, 0)) 
+        screen.blit(textBitmap, \
+                    [self.width * 0.93 + self.x - textBitmap.get_size()[0], \
+                      (self.height - textBitmap.get_size()[1]) / 2  + self.y])
+
 

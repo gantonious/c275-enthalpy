@@ -1,6 +1,5 @@
 import pygame
 import interfaces
-import time
 from interfaces.interface import Interface
 from drawing import *
 from elements import *
@@ -9,7 +8,6 @@ class Pause_Menu(Interface):
     def __init__(self, players, width, height, params):
         super().__init__(players, width, height, params)
         self.element_init()
-        time.sleep(0.15) # button debounce
 
     def element_init(self):
         """
@@ -46,7 +44,7 @@ class Pause_Menu(Interface):
                 self.buttons[1].selected = 1
                 self.selected_button = self.buttons[1]
 
-            if self.players[0].get_input()[5]:
+            if self.players[0].get_debounced_input(5):
                 if self.selected_button.event == None:
                     return (1, self.selected_button.event, [])
                 else:

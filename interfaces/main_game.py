@@ -17,11 +17,12 @@ class Main_Game(Interface):
         self.printer = TextPrint()
         self.play_area = [0, 0, self.width, self.height*0.9]
         self.players = params[0]
+        self.level = params[1]
         self.reset()
 
     def reset(self):
         x_spacing = self.width * 0.05
-        
+
         for player in enumerate(self.players):
             player[1].health = 100
             player[1].max_health = 100
@@ -40,7 +41,6 @@ class Main_Game(Interface):
         self.loader.interface = self
         self.loader.players = self.players
         self.loader.enemies = self.enemies
-        self.level = "levels/1.lvl"
         self.loader.load(self.level)
 
     def update(self, dt):
@@ -83,18 +83,21 @@ class Main_Game(Interface):
         if self.players[0].health < 0:
             return (1, "main_menu", [])
             
-        if self.players[0].get_input()[6]:
+        if self.players[0].get_debounced_input(6):
             return (0, "pause_menu", [])
+
+        if self.loader.finished and self.enemies == [] or self.players[0].get_debounced_input(7):
+            return (1, "level_clear", [self.players, self.loader.level_name, self.loader.next_level])
 
         return True
 
     def pause_thread(self):
         if self.thread.is_alive():
-            self.loader.pasued = True
+            self.loader.paused = True
 
     def resume_thread(self):
         if self.thread.is_alive():
-            self.loader.pasued = False
+            self.loader.paused = False
 
     def kill_thread(self):
         if self.thread.is_alive():
@@ -102,7 +105,7 @@ class Main_Game(Interface):
 
     def draw(self, screen, clock=None):
         screen.fill((0,0,0))
-        pygame.draw.rect(screen, (255,255,255), self.play_area)
+        pygame.draw.rect(screen, (255 ,255 ,255), self.play_area)
 
         for player in enumerate(self.players):
             draw_entity(screen, player[1])

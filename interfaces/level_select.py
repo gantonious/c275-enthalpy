@@ -1,6 +1,5 @@
 import pygame
 import interfaces
-import time
 from interfaces.interface import Interface
 from drawing import *
 from elements import *
@@ -9,7 +8,6 @@ class Level_Select(Interface):
     def __init__(self, players, width, height, params):
         super().__init__(players, width, height, params)
         self.element_init()
-        time.sleep(0.15) # button debounce
 
     def element_init(self):
         """
@@ -51,9 +49,9 @@ class Level_Select(Interface):
                 locked_players.append(selector.player)
                 selector.player.color = CharacterSelect.COLORS[selector.color_selection]
 
-        if locked and self.players[0].get_input()[5]:
-            return (1, "main_game", [locked_players])
-        elif not_joined and self.players[0].get_input()[7]:
+        if locked and self.players[0].get_debounced_input(5):
+            return (1, "main_game", [locked_players, "levels/1.lvl"])
+        elif not_joined and self.players[0].get_debounced_input(7):
             return (1, "main_menu", [])
 
         return True

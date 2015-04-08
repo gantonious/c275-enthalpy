@@ -7,6 +7,7 @@ from interfaces.main_game import Main_Game
 from interfaces.main_menu import Main_Menu
 from interfaces.pause_menu import Pause_Menu
 from interfaces.level_select import Level_Select
+from interfaces.level_clear import Level_Clear
 
 class GUI:
     """
