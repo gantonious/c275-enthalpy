@@ -29,7 +29,7 @@ class Legacy_Game(Interface):
             player[1].x = (self.width - len(self.players) * player[1].width - (len(self.players) - 1) * x_spacing) / 2 + player[0] * (player[1].width + x_spacing)
             player[1].y = 600
 
-        self.proj_tree = Quadtree(*self.play_area)
+        self.proj_tree = Quadtree(self.play_area[0], self.play_area[1], self.play_area[2], self.play_area[3], 3, 1)
 
     def num_players_alive(self):
         num_alive = 0

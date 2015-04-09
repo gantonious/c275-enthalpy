@@ -4,14 +4,16 @@ from interfaces.interface import Interface
 from drawing import *
 from elements import *
 from loader import *
-from saver import *
 
 class Level_Select(Interface):
     def __init__(self, players, width, height, params):
         super().__init__(players, width, height, params)
         self.element_init()
-        self.saver = Saver()
         self.game_mode = params[0]
+        pygame.mixer.stop()
+        self.background_music = pygame.mixer.Sound(file = "assets/audio/level select.wav")
+        self.background_music.play(loops=-1, fade_ms=2000)
+
 
     def element_init(self):
         """
@@ -65,20 +67,19 @@ class Level_Select(Interface):
 
         if self.players[0] in locked_players and self.players[0].get_debounced_input(5):
             if self.game_mode == "main_game":
-                if not self.saver.save_file:
-                    return (1, "main_game", [locked_players, self.saver.save_file])
-                else:
-                    return (1, "main_game", [locked_players, "levels/1.lvl"])
+                return (1, "main_game", [locked_players, "levels/1.lvl"])
             elif self.game_mode == "legacy_game":
                 if len(locked_players) >= 2:
                     return (1, "legacy_game", [locked_players])
                 else:
-                    self.static_elements[1].color = (255, 0, 0)
+                    self.static_elements[1].color = (0, 0, 0)
+                    self.static_elements[1].background = True
                     self.static_elements[1].caption = "at least two players must be locked in"
                     self.static_elements[1].x = (self.width - self.static_elements[1].get_dimensions()[0]) / 2
         
         if self.players[0] not in locked_players or \
             self.players[0] in locked_players and len(locked_players) >=2:
+            self.static_elements[1].background = False
             self.static_elements[1].caption = ""
 
         if self.players[0].get_debounced_input(6) and self.game_mode == "main_game":

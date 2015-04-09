@@ -94,6 +94,7 @@ class TextBox:
         self._font_face = "Roboto-Thin.ttf"
         self.font_size = font_size
         self.caption = caption
+        self.background = False
 
     @property
     def x(self):
@@ -158,6 +159,12 @@ class TextBox:
         return self.textBitmap.get_size()
 
     def draw(self, screen):
+        if self.background:
+            text_background = pygame.Surface((self.get_dimensions()[0] + self.font_size / 2, self.get_dimensions()[1] + self.font_size / 2))
+            text_background.set_alpha(150)
+            text_background.fill(WHITE)
+            screen.blit(text_background, [self.x - self.font_size / 4, self.y - self.font_size / 4])
+            pygame.draw.rect(screen, BLACK, (self.x - self.font_size / 4, self.y - self.font_size / 4, self.get_dimensions()[0] + self.font_size / 2, self.get_dimensions()[1] + self.font_size / 2), 2)
         screen.blit(self.textBitmap, [self._x, self._y])
 
 class PictureBox:

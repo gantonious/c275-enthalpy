@@ -36,7 +36,7 @@ class Main_Game(Interface):
         self.thread = Thread(target=self.loader_init)
         self.loaded = False
         self.loader = Loader()
-        self.proj_tree = Quadtree(*self.play_area)
+        self.proj_tree = Quadtree(self.play_area[0], self.play_area[1], self.play_area[2], self.play_area[3], 0, 1)
 
     def loader_init(self):
         self.loader.interface = self
@@ -131,6 +131,8 @@ class Main_Game(Interface):
                 draw_entity(screen, drop)
             else:
                 drop.update()
+
+        self.proj_tree.draw(screen)
 
         self.printer.reset()
         self.printer.print_text(screen, "FPS: {}".format(clock.get_fps()), (0, 0, 0))

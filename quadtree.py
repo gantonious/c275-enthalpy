@@ -12,9 +12,7 @@ class Quadtree:
     ---------
     """
 
-    MAX_CAPACITY = 1
-    MAX_DEPTH = 3
-    def __init__(self, x, y, width, height, depth=0):
+    def __init__(self, x, y, width, height, max_depth, max_capacity, depth=0):
         self._x = x
         self._y = y
         self._width = width
@@ -22,15 +20,17 @@ class Quadtree:
         self._depth = depth
         self._children = [] # list of children nodes
         self._contents = [] # list of objects we hold
+        self._max_depth = max_depth
+        self._max_capacity = max_capacity
 
     def _split(self):
         """
         Splits current node into 4 children nodes
         """
-        self._children  = [Quadtree(self._x, self._y, self._width / 2, self._height / 2, self._depth + 1),
-                            Quadtree(self._x + self._width / 2, self._y, self._width / 2, self._height / 2, self._depth + 1),
-                            Quadtree(self._x, self._y + self._height / 2, self._width / 2, self._height / 2, self._depth + 1),
-                            Quadtree(self._x + self._width / 2, self._y + self._height / 2, self._width / 2, self._height / 2, self._depth + 1)]
+        self._children  = [Quadtree(self._x, self._y, self._width / 2, self._height / 2, self._max_depth, self._max_capacity, self._depth + 1),
+                            Quadtree(self._x + self._width / 2, self._y, self._width / 2, self._height / 2, self._max_depth, self._max_capacity, self._depth + 1),
+                            Quadtree(self._x, self._y + self._height / 2, self._width / 2, self._height / 2, self._max_depth, self._max_capacity, self._depth + 1),
+                            Quadtree(self._x + self._width / 2, self._y + self._height / 2, self._width / 2, self._height / 2, self._max_depth, self._max_capacity, self._depth + 1)]
 
     def _get_node(self, item):
         """
@@ -75,8 +75,8 @@ class Quadtree:
         self._contents.append(item)
 
         if self._children == [] and \
-            len(self._contents) > Quadtree.MAX_CAPACITY and \
-            self._depth < Quadtree.MAX_DEPTH:
+            len(self._contents) > self._max_capacity and \
+            self._depth < self._max_depth:
 
             # full, time to subdivide node
             self._split()

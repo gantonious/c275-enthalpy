@@ -8,6 +8,9 @@ class Main_Menu(Interface):
     def __init__(self, players, width, height, params):
         super().__init__(players, width, height, params)
         self.element_init()
+        pygame.mixer.stop()
+        self.background_music = pygame.mixer.Sound(file = "assets/audio/title song.wav")
+        self.background_music.play(loops=-1, fade_ms=2000)
 
     def element_init(self):
         """
