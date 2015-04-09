@@ -31,11 +31,12 @@ class Legacy_Game(Interface):
 
         self.proj_tree = Quadtree(*self.play_area)
 
-    def player_alive(self):
+    def num_players_alive(self):
+        num_alive = 0
         for player in self.players:
             if player.health > 0:
-                return True
-        return False
+                num_alive += 1
+        return num_alive
 
     def update(self, dt):
         """
@@ -60,7 +61,7 @@ class Legacy_Game(Interface):
             for proj in self.proj_tree.get_objects(player):
                 proj.collide(player)
 
-        if not self.player_alive():
+        if self.num_players_alive() <= 1:
             return (1, "main_menu", [])
             
         if self.players[0].get_debounced_input(6):

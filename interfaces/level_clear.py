@@ -24,6 +24,16 @@ class Level_Clear(Interface):
         self.static_elements.append(TextBox(40, "Level " + self.level_name.rstrip() + " Cleared!"))
         self.static_elements[0].x = (self.width - self.static_elements[0].get_dimensions()[0]) / 2
         self.static_elements[0].y = self.height * 0.08
+        self.static_elements.append(TextBox(20, "Back"))
+        self.static_elements[1].x = self.width - self.static_elements[1].get_dimensions()[0] - 60
+        self.static_elements[1].y = self.height - self.static_elements[1].get_dimensions()[1]*1.7
+        self.static_elements.append(PictureBox(self.static_elements[1].x + self.static_elements[1].get_dimensions()[0] + 5, self.height - 53, \
+                                    pygame.transform.scale(pygame.image.load("assets/icons/PS4_Circle.png").convert_alpha(), (45, 45))))
+        self.static_elements.append(TextBox(20, "Select"))
+        self.static_elements[3].x = self.static_elements[1].x - self.static_elements[2].get_dimensions()[0] - 60
+        self.static_elements[3].y = self.height - self.static_elements[3].get_dimensions()[1]*1.7  
+        self.static_elements.append(PictureBox(self.static_elements[3].x + self.static_elements[3].get_dimensions()[0] + 5, self.height - 53, \
+                            pygame.transform.scale(pygame.image.load("assets/icons/PS4_Cross.png").convert_alpha(), (45, 45))))
 
         score_sorted_players = self.players
         score_sorted_players.sort(key=lambda x:x.score)

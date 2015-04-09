@@ -32,6 +32,7 @@ class Main_Game(Interface):
             player[1].x = (self.width - len(self.players) * player[1].width - (len(self.players) - 1) * x_spacing) / 2 + player[0] * (player[1].width + x_spacing)
             player[1].y = 600
 
+        self.alive_players = self.players[:]
         self.thread = Thread(target=self.loader_init)
         self.loaded = False
         self.loader = Loader()
@@ -43,18 +44,22 @@ class Main_Game(Interface):
         self.loader.enemies = self.enemies
         self.loader.load(self.level)
 
+    def update_alive_players(self):
+        for player in self.alive_players:
+            if player.health <= 0:
+                self.alive_players.remove(player)
+
     def update(self, dt):
         """
         Runs all the logic for the current frame
-        """
-
+        """        
         if not self.thread.is_alive() and not self.loaded:
             self.thread.start()
             self.loaded = True
 
         self.proj_tree.clear()
 
-        for player in enumerate(self.players):
+        for player in enumerate(self.alive_players):
             player[1].update(self.projs, self.play_area, dt)
 
         for enemy in self.enemies:
@@ -71,19 +76,21 @@ class Main_Game(Interface):
                 proj.collide(enemy)
 
         # run collisions on projectiles that have a high chance of colliding with player
-        for player in self.players:
+        for player in self.alive_players:
             for proj in self.proj_tree.get_objects(player):
                 proj.collide(player)
             for drop in self.drops:
                 drop.collide(player)
 
+        self.update_alive_players()
+
         if not self.enemies:
             self.loader.set_clear(True)
 
-        if self.players[0].health < 0:
+        if not self.alive_players:
             return (1, "main_menu", [])
             
-        if self.players[0].get_debounced_input(6):
+        if self.alive_players[0].get_debounced_input(6):
             return (0, "pause_menu", [self.loader.level_name])
 
         if self.loader.finished and self.enemies == [] or self.players[0].get_debounced_input(7):
@@ -107,7 +114,7 @@ class Main_Game(Interface):
         screen.fill((0,0,0))
         pygame.draw.rect(screen, (255 ,255 ,255), self.play_area)
 
-        for player in enumerate(self.players):
+        for player in enumerate(self.alive_players):
             draw_entity(screen, player[1])
             draw_hit_box(screen, player[1])
             draw_health_bar(screen, player[1])

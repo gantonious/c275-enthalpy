@@ -15,7 +15,6 @@ class Projectile(Entity):
         super().__init__(ID)
         self._x = x
         self._y = y
-        self._hitbox = self._x
         self.shooter = shooter
 
     def _move(self, dimensions, dt):
@@ -40,6 +39,7 @@ class StraightProjectile(Projectile):
         self._height = int(params[2])
         self._x_speed = int(params[3]) # in px/s
         self._y_speed = int(params[4])
+        self._hitbox = self._width
 
     def _move(self, dimensions, dt):
         self._x += self._x_speed * dt
@@ -58,6 +58,7 @@ class SunburstProjectiles(Projectile):
         self._speed = int(params[3])
         self._shots = int(params[4])
         self._turn = int(params[5])
+        self._hitbox = self._width
         try:
             self.shooter.turn
         except AttributeError:
@@ -93,6 +94,7 @@ class FallingProjectile(Projectile):
         self._gravity = int(params[4])
         self._direction = direction
         self._y_speed = 0
+        self._hitbox = self._width
 
     def _move(self, dimensions, dt):
         self._x += self._x_speed * dt * self._direction
@@ -111,6 +113,7 @@ class TargetedProjectile(Projectile):
         self._height = int(params[2])
         self._speed = int(params[3])
         self.target = params[4]
+        self._hitbox = self._width
 
         if self.target is None:
             self._x_speed = 0

@@ -3,11 +3,14 @@ import interfaces
 from interfaces.interface import Interface
 from drawing import *
 from elements import *
+from loader import *
+from saver import *
 
 class Level_Select(Interface):
     def __init__(self, players, width, height, params):
         super().__init__(players, width, height, params)
         self.element_init()
+        self.saver = Saver()
         self.game_mode = params[0]
 
     def element_init(self):
@@ -62,7 +65,10 @@ class Level_Select(Interface):
 
         if self.players[0] in locked_players and self.players[0].get_debounced_input(5):
             if self.game_mode == "main_game":
-                return (1, "main_game", [locked_players, "levels/1.lvl"])
+                if not self.saver.save_file:
+                    return (1, "main_game", [locked_players, self.saver.save_file])
+                else:
+                    return (1, "main_game", [locked_players, "levels/1.lvl"])
             elif self.game_mode == "legacy_game":
                 if len(locked_players) >= 2:
                     return (1, "legacy_game", [locked_players])
@@ -74,6 +80,9 @@ class Level_Select(Interface):
         if self.players[0] not in locked_players or \
             self.players[0] in locked_players and len(locked_players) >=2:
             self.static_elements[1].caption = ""
+
+        if self.players[0].get_debounced_input(6) and self.game_mode == "main_game":
+            self.saver.find_save()
 
         if not_joined and self.players[0].get_debounced_input(7):
             return (1, "main_menu", [])

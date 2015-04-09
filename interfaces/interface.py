@@ -8,6 +8,19 @@ class Interface:
     def reset(self):
         pass
 
+    def get_any_player_input(self, index):
+        """
+        Checks to see if any play pressed the indicated button
+
+        Returns:
+        0 - no player pressed the indicated button
+        1 - some player pressed the indicated button
+        """
+        for player in self.players:
+            if player.get_debounced_input(index):
+                return 1
+        return 0
+
     def pause_thread(self):
         pass
 
