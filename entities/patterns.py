@@ -27,14 +27,13 @@ def move_to(enemy, screen, dt, params):
 def straight(enemy, dimensions, dt, params):
     enemy.wait_to_shoot = False
     if enemy.x_speed is None:
-        if enemy.on_screen(dimensions):
-            enemy.is_on_screen = True
-        else:
-            enemy.is_on_screen = False
+        enemy.was_on_screen = False
+    if enemy.on_screen(dimensions):
+        enemy.was_on_screen = True
 
     # enemy both came on screen and then left (never to come back)
-    if enemy.is_on_screen and not enemy.on_screen(screen):
-        enemy.despawn()
+    if enemy.was_on_screen and not enemy.on_screen(dimensions):
+        return None, None
 
     return int(params[0]), int(params[1])
 

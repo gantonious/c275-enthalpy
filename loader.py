@@ -75,7 +75,7 @@ class Loader:
             line = line.rstrip()
             if line == "Clear":
                 self.set_clear(False)
-                return 0
+                return True
 
             line = line.split(' ')
 
@@ -117,7 +117,7 @@ class Loader:
                 if next_line.find("***") == 0:
                     break
                 elif line[0] == "Enemy":
-                    raise Exception("Invalid enemy definition: {}".format(str(line)))
+                    raise Exception("Invalid/no drop definition for enemy: {}".format(str(line)))
                 move_line = next_line
 
             drop_list = []
@@ -128,7 +128,10 @@ class Loader:
                 drop_line = drop_line.split(' ')
                 if drop_line[0].find("*") == 0:
                     raise Exception("Invalid/no drop definition: {}".format(str(drop_line)))
-                drop_list.append(drop_line)
+                if drop_line[0] == "None":
+                    pass
+                else:
+                    drop_list.append(drop_line)
                 drop_line = lvl.readline()
 
             # create entity with the defined properties
@@ -145,12 +148,12 @@ class Loader:
             entity.fire_rate = int(line[7])
             entity.shot_time = 0 # shots per second
             entity.pattern_params = [[float(move_list[0][i]) for i in range(1, len(move_list[0]))]]
-            entity.projectile_params = [[float(proj_list[0][i]) for i in range(1, len(proj_list[0])-1)]]
+            entity.projectile_params = [[float(proj_list[0][i]) for i in range(1, len(proj_list[0]))]]
             # oh man i am not good with computer pls to help
             # conditional for targeting projectiles
             if entities.entity_types[proj_list[0][0]].targets:
-                if len(self.players) > int(proj_list[0][-1]):
-                    entity.projectile_params[-1].append(self.players[int(proj_list[0][-1])])
+                if len(self.players) > 0:
+                    entity.projectile_params[-1].append(random.choice(self.players))
                 else:
                     entity.projectile_params[-1].append(None)
             else:
@@ -163,9 +166,9 @@ class Loader:
                     entity.patterns.append(entities.pattern_types[move_list[j][0]])
                     entity.projectiles.append(entities.entity_types[proj_list[j][0]])
                     entity.pattern_params += [[float(move_list[j][i]) for i in range(1, len(move_list[j]))]]
-                    entity.projectile_params += [[float(proj_list[j][i]) for i in range(1, len(proj_list[j])-1)]]
+                    entity.projectile_params += [[float(proj_list[j][i]) for i in range(1, len(proj_list[j]))]]
                     if entities.entity_types[proj_list[j][0]].targets:
-                        if len(self.players) > int(proj_list[j][-1]):
+                        if len(self.players) > 0:
                             entity.projectile_params[-1].append(random.choice(self.players))
                         else:
                             entity.projectile_params[-1].append(None)
@@ -178,6 +181,6 @@ class Loader:
 
             self.enemies.append(entity)
             entity.in_list = self.enemies
-            return 0
+            return True
 
         return None

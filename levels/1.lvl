@@ -6,85 +6,195 @@ Enemies:
 Enemy 100 -30 50 20 20 20 3
 *Straight 0 100
 **Straight 5 5 5 200 0
+***None
 
-Delay 400
-
-Enemy 100 -30 50 20 20 20 3
-*Straight 0 100
-**Straight 5 5 5 200 0
-
-Delay 400
+Delay 500
 
 Enemy 100 -30 50 20 20 20 3
 *Straight 0 100
 **Straight 5 5 5 200 0
+***ShotSize 2 10
 
-Delay 400
-
-Enemy 100 -30 50 20 20 20 3
-*Straight 0 100
-**Straight 5 5 5 200 0
-
-Delay 400
+Delay 500
 
 Enemy 100 -30 50 20 20 20 3
 *Straight 0 100
 **Straight 5 5 5 200 0
+***ShotSize 2 10
 
-Delay 400
+Delay 500
+
+Enemy 100 -30 50 20 20 20 3
+*Straight 0 100
+**Straight 5 5 5 200 0
+***ShotSize 2 10
+
+Delay 500
+
+Enemy 100 -30 50 20 20 20 3
+*Straight 0 100
+**Straight 5 5 5 200 0
+***ShotSize 2 10
+
+Delay 500
 
 Enemy 1180 -30 50 20 20 20 3
 *Straight 0 100
 **Straight 5 5 5 -200 0
+***ShotSize 2 10
 
-Delay 400
-
-Enemy 1180 -30 50 20 20 20 3
-*Straight 0 100
-**Straight 5 5 5 -200 0
-
-Delay 400
+Delay 500
 
 Enemy 1180 -30 50 20 20 20 3
 *Straight 0 100
 **Straight 5 5 5 -200 0
+***Invuln 2 10
 
-Delay 400
-
-Enemy 1180 -30 50 20 20 20 3
-*Straight 0 100
-**Straight 5 5 5 -200 0
-
-Delay 400
+Delay 500
 
 Enemy 1180 -30 50 20 20 20 3
 *Straight 0 100
 **Straight 5 5 5 -200 0
+***Score 200
+
+Delay 500
+
+Enemy 1180 -30 50 20 20 20 3
+*Straight 0 100
+**Straight 5 5 5 -200 0
+***Score 400
+
+Delay 500
+
+Enemy 1180 -30 50 20 20 20 3
+*Straight 0 100
+**Straight 5 5 5 -200 0
+***Score 100
+***Score 200
+***Score 400
+***Score 800
 
 Clear
 
+Enemy -30 100 50 20 20 20 3
+*Straight 150 0
+**Falling 5 5 5 100 50
+***Score 100
+***Score 200
+***Score 400
+***Score 800
+
+Delay 500
+
+Enemy -30 100 50 20 20 20 3
+*Straight 150 0
+**Falling 5 5 5 100 50
+***Score 100
+***Score 200
+***Score 400
+***Score 800
+
+Delay 500
+
+Enemy -30 100 50 20 20 20 3
+*Straight 150 0
+**Falling 5 5 5 100 50
+***Score 100
+***Score 200
+***Score 400
+***Score 800
+
+Delay 500
+
+Enemy -30 100 50 20 20 20 3
+*Straight 150 0
+**Falling 5 5 5 100 50
+***Score 100
+***Score 200
+***Score 400
+***Score 800
+
+Delay 500
+
+Enemy -30 100 50 20 20 20 3
+*Straight 150 0
+**Falling 5 5 5 100 50
+***Score 100
+***Score 200
+***Score 400
+***Score 800
+
+Delay 2000
+
+Enemy -30 550 50 20 20 20 3
+*Straight 150 0
+**Sunburst 5 5 5 150 5 6
+***Invuln 10
+
+Delay 1000
+
+Enemy -30 550 50 20 20 20 3
+*Straight 150 0
+**Sunburst 5 5 5 150 5 6
+***Score 400
+
+Delay 1000
+
+Enemy -30 550 50 20 20 20 3
+*Straight 150 0
+**Sunburst 5 5 5 150 5 6
+***Score 400
+
+Delay 1000
+
+Enemy -30 550 50 20 20 20 3
+*Straight 150 0
+**Sunburst 5 5 5 150 5 6
+***Score 400
+
+Delay 1000
+
+Enemy -30 550 50 20 20 20 3
+*Straight 150 0
+**Sunburst 5 5 5 150 5 6
+***Score 400
+
+Clear
 
 Enemy 200 750 100 30 30 30 3
-*MoveTo 250 600 300
+*MoveTo 250 550 300
 **Targeted 5 5 5 300
+***None
 
 Delay 2000
 
 Enemy 1310 400 100 30 30 30 3
 *MoveTo 1130 450 300
 **Targeted 5 5 5 300
+***Score 100
+***Score 200
+***Score 400
+***Score 800
 
 Delay 2000
 
 Enemy 300 -30 100 30 30 30 3
 *MoveTo 350 250 300
 **Targeted 5 5 5 300
+***Score 100
+***Score 200
+***Score 400
+***Score 800
 
 Delay 2000
 
 # Enemy 600 200 100 20 20 20 5
 # *MoveTo 100 100 300
 # **Sunburst 5 5 5 200 8 5
+# ***Score 100
+# ***Score 200
+# ***Score 400
+# ***Score 800
 
 # Clear
 
@@ -92,10 +202,18 @@ Delay 2000
 # *Sweep 200 1000
 # **Targeted 5 5 5 400 0
 # ***Score 100
+# ***Score 100
+# ***Score 200
+# ***Score 400
+# ***Score 800
 
 # Enemy 600 -10 100 20 20 20 2
 # *Straight 200 200
 # **Falling 5 5 5 400 100
+# ***Score 100
+# ***Score 200
+# ***Score 400
+# ***Score 800
 
 # Delay 1000
 

@@ -9,7 +9,6 @@ Enemies:
 <Enemy/Boss> <x> <y> <health> <width> <height> <hitbox> <fire rate>
 *<pattern> {parameters}
 **<projectile> <health> <width> <height> {parameters}
-
 ***<drop> {parameters}
 
 Enemies end

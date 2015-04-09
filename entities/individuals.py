@@ -26,6 +26,8 @@ class Player(Entity):
         joystick.init() # initializes joysticks
         self._check_init() # makes sure joystick initialized succesfully
         self._button_debounce = [1 for i in range(len(self._map))]
+        self.invuln_active = False
+        self.shotsize_active = False
     
     def _check_init(self):
         if self._joystick.get_init():
@@ -129,24 +131,29 @@ class Enemy(Entity):
 
     # an enemy's x, y, x_speed, y_speed must be set before moving it
     # so that pattern knows what to do
-    def _move(self, dimensions, dt):
-        self._x_speed, self._y_speed = self._pattern(self, dimensions, dt, self._pattern_params)
-        self._direction = 0 if self._x_speed == 0 else copysign(1, float(self._x_speed))
-        self._x += self._x_speed * dt
-        self._y += self._y_speed * dt
+    def _move(self, dimensions, drop_list, dt):
+        self._x_speed, self._y_speed = self._pattern(self, dimensions, dt, self._pattern_params[0])
+        if self._x_speed == None:
+            self.despawn(drop_list)
+        else:
+            self._direction = 0 if self._x_speed == 0 else copysign(1, float(self._x_speed))
+            self._x += self._x_speed * dt
+            self._y += self._y_speed * dt
         self.center = self.get_center()
 
     def _attack(self, projs):
         if self.wait_to_shoot:
             if self._x_speed != 0 or self._y_speed != 0:
                 return
+        if self._x_speed is None:
+            return
         shot_time = pygame.time.get_ticks()
         # self.shot_time should be set in the loader
         if shot_time - self.shot_time >= 1000/self.fire_rate:
             if self._projectile == FallingProjectile:
-                proj = self._projectile(self._ID, self, self.center[0], self.center[1], self._direction, self._projectile_params)
+                proj = self._projectile(self._ID, self, self.center[0], self.center[1], self._direction, self._projectile_params[0])
             else:
-                proj = self._projectile(self._ID, self, self.center[0], self.center[1], self._projectile_params)
+                proj = self._projectile(self._ID, self, self.center[0], self.center[1], self._projectile_params[0])
             projs.append(proj)
             proj.in_list = projs
             self.shot_time = shot_time
@@ -206,23 +213,26 @@ class Enemy(Entity):
     def drops(self, drops):
         self._drops = drops
 
-    def update(self, projs, drops, screen, dt):
+    def update(self, projs, drop_list, screen, dt):
         if self.health < 0:
-            self.despawn(drops)
-        self._move(screen, dt)
+            self.despawn(drop_list)
+        self._move(screen, drop_list, dt)
         self._attack(projs)
 
-    def despawn(self, drops):
+    def despawn(self, drop_list):
         super().despawn()
 
         # spawn some drops
+        if self._x_speed is None or self._y_speed is None:
+            return
         for d in self._drops:
-            drop_params = [float(d[i]) for i in range(1, len(d))]
+            drop_params = [float(i) for i in d[1:]]
             drop = entities.drop_types[d[0]](self._x, self._y, drop_params)
             drop.width = 20
             drop.height = 20
-            drops.append(drop)
-            drop.in_list = drops
+            drop_list.append(drop)
+            drop.in_list = drop_list
+            
 
 class Boss(Entity):
     def __init__(self, ID, patterns, projs):

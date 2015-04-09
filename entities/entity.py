@@ -112,10 +112,6 @@ class Entity:
 
     def on_screen(self, dimensions):
         # returns True if the entity is on screen (or should be on screen)
-        if self._x_speed is None or self._y_speed is None:
-            # this is a very bad assumption
-            return True
-
         return self._x > dimensions[0] and self._x + self.width < dimensions[0] + dimensions[2] and \
             self._y > dimensions[1] and self._y + self._height < dimensions[1] + dimensions[3]
 

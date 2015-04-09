@@ -32,7 +32,7 @@ Boss 900 -50 5000 50 50 50 15
 *MoveTo 1100 100 400
 **Falling 5 5 5 400 100
 *Border 200
-**Targeted 5 5 5 400 0
+**Targeted 5 5 5 400
 ***ShotSize 2 10
 
 Enemies end
