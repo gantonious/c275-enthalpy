@@ -361,6 +361,7 @@ class Boss(Entity):
         self._current += 1
         self._pattern = self._patterns[self._current]
         self._projectile = self._projectiles[self._current]
+        self._x_speed = None # IT'S RIGHT HERE
 
     def despawn(self, drops):
         super().despawn()
