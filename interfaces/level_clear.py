@@ -82,6 +82,7 @@ class Level_Clear(Interface):
 
             if self.players[0] in locked_players and self.players[0].get_debounced_input(5):
                 if self.next_level != None:
+                    locked_players.sort(key=lambda x:x.ID)
                     return (1, "main_game", [locked_players, "levels/" + self.next_level])
         else:
             self.buttons.update()
