@@ -1,5 +1,5 @@
 """
-Contains some UI element classes such as, buttons, textboxess etc
+Contains some UI element classes such as, buttons, textboxes etc
 """
 import pygame
 
@@ -40,21 +40,28 @@ class RadioButtons:
     A class that handdles having multiple buttons arranged vertically
     where only one button can be selected at a time
     """
-    def __init__(self, x, y, button_width, button_height, players):
+    def __init__(self, x, y, button_width, button_height, orientation, players):
         self.buttons = []
         self.players = players
         self.threshold = 0.08
         self.y_spacing = button_height * 0.25
+        self.x_spacing = button_width * 0.25
         self.x = x
         self.y = y
         self.button_width = button_width
         self.button_height = button_height
+        self.orientation = orientation # 0 for vert 1 for hor
         self.selected_button = None
         self.stick_debounce = [0, 250]
+        self.stick_map = [(1, 3), (0, 2)]
 
     def add_radio_button(self, event, caption):
-        self.buttons.append(Button(self.x, self.y + len(self.buttons) * (self.y_spacing + self.button_height), \
-                                 self.button_width, self.button_height, event, caption))
+        if self.orientation == 0:
+            self.buttons.append(Button(self.x, self.y + len(self.buttons) * (self.y_spacing + self.button_height), \
+                            self.button_width, self.button_height, event, caption))
+        elif self.orientation == 1:
+            self.buttons.append(Button(self.x + len(self.buttons) * (self.x_spacing + self.button_width), self.y, \
+                                        self.button_width, self.button_height, event, caption))
 
     def select_button(self, target_button):
         for button in self.buttons:
@@ -71,16 +78,20 @@ class RadioButtons:
             if pygame.time.get_ticks() - self.stick_debounce[0] > self.stick_debounce[1]:
                 for button in enumerate(self.buttons):
                     if button[0] == 0:
-                        if (self.players[0].get_input()[3] < -self.threshold or self.players[0].get_input()[1] < -self.threshold) and self.buttons[button[0] + 1].selected == 1:
+                        if (self.players[0].get_input()[self.stick_map[self.orientation][0]] < -self.threshold \
+                            or self.players[0].get_input()[self.stick_map[self.orientation][1]] < -self.threshold) and self.buttons[button[0] + 1].selected == 1:
                             self.select_button(button[1])
                             break  
                     elif button[0] == (len(self.buttons) - 1):
-                        if (self.players[0].get_input()[3] > self.threshold or self.players[0].get_input()[1] > self.threshold) and self.buttons[button[0] - 1].selected == 1:
+                        if (self.players[0].get_input()[self.stick_map[self.orientation][0]] > self.threshold or \
+                            self.players[0].get_input()[self.stick_map[self.orientation][1]] > self.threshold) and self.buttons[button[0] - 1].selected == 1:
                             self.select_button(button[1])
                             break  
                     else:
-                        if ((self.players[0].get_input()[3] > self.threshold or self.players[0].get_input()[1] > self.threshold) and self.buttons[button[0] - 1].selected == 1) \
-                            or ((self.players[0].get_input()[3] < -self.threshold or self.players[0].get_input()[1] < -self.threshold) and self.buttons[button[0] + 1].selected == 1):
+                        if ((self.players[0].get_input()[self.stick_map[self.orientation][0]] > self.threshold or \
+                            self.players[0].get_input()[self.stick_map[self.orientation][1]] > self.threshold) and self.buttons[button[0] - 1].selected == 1) \
+                            or ((self.players[0].get_input()[self.stick_map[self.orientation][0]] < -self.threshold or \
+                            self.players[0].get_input()[self.stick_map[self.orientation][1]] < -self.threshold) and self.buttons[button[0] + 1].selected == 1):
                             self.select_button(button[1])
                             break
 
@@ -179,17 +190,53 @@ class PictureBox:
     def draw(self, screen):
         screen.blit(self._image, [self.x, self.y])
 
+class CharacterStatusBar:
+    def __init__(self, x, y, width, height, player):
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height  
+        self.player = player
+
+    def draw(self, screen):
+        background = pygame.Surface((self.width, self.height))
+        background.set_alpha(150)
+        background.fill(WHITE)
+        screen.blit(background, [self.x, self.y])
+        pygame.draw.rect(screen, self.player.color, (self.x, self.y, self.width, self.height), 2)
+
+        health_bar_x = self.width * 0.4 + self.x
+        health_bar_y = self.height * 0.22 + self.y
+        health_bar_width = self.width * 0.55
+        health_bar_height = self.height * 0.15
+
+        pygame.draw.rect(screen, self.player.color, (health_bar_x, health_bar_y, health_bar_width, health_bar_height), 1)
+        pygame.draw.rect(screen, self.player.color, (health_bar_x, health_bar_y, max(0, self.player.health * health_bar_width / self.player.max_health), health_bar_height))
+
+        font_size = int(self.height * 0.62)
+        font = pygame.font.Font("assets/Roboto-Thin.ttf", font_size)
+        textBitmap = font.render("P" + str(self.player.ID + 1), True, self.player.color) 
+        screen.blit(textBitmap, \
+                    [self.x + self.width * 0.1, \
+                    (self.height - textBitmap.get_size()[1]) / 2 + self.y])
+
+        font_size = int(self.height * 0.4)
+        font = pygame.font.Font("assets/Roboto-Thin.ttf", font_size)
+        textBitmap = font.render(str(self.player.score), True, self.player.color) 
+        screen.blit(textBitmap, \
+                [self.width * 0.95 + self.x - textBitmap.get_size()[0], \
+                self.y + self.height * 0.50])
+
 
 class CharacterSelect:
     COLORS = [RED, GREEN, ORANGE, BLUE]
-    def __init__(self, x, y, width, height, player, ID):
+    def __init__(self, x, y, width, height, player):
         self.x = x
         self.y = y
         self.width = width
         self.height = height
         self.target_height = self.height
         self.player = player
-        self.ID = ID
         self.state = 0
         self.color_selection = 0
         self.stick_debounce = [0, 250]
@@ -248,7 +295,7 @@ class CharacterSelect:
         pygame.draw.rect(screen, BLACK, (self.x, self.y, self.width, self.height), 2)
         font_size = 30
         font = pygame.font.Font("assets/Roboto-Thin.ttf", font_size)
-        textBitmap = font.render("player " + str(self.ID), True, (0, 0, 0)) 
+        textBitmap = font.render("player " + str(self.player.ID + 1), True, (0, 0, 0)) 
         screen.blit(textBitmap, \
                     [(self.width - textBitmap.get_size()[0]) / 2 + self.x, \
                       textBitmap.get_size()[1] * 0.6 + self.y])
@@ -268,38 +315,85 @@ class CharacterSelect:
             textBitmap = font.render("<< select a color >>", True, (0, 0, 0)) 
             screen.blit(textBitmap, \
                         [(self.width - textBitmap.get_size()[0]) / 2 + self.x, \
-                          self.height * 0.8 + self.y])
+                        self.height * 0.8 + self.y])
         elif self.state == 2:
             font_size = 18
             font = pygame.font.Font("assets/Roboto-Thin.ttf", font_size)
             textBitmap = font.render("ready, press o to unready", True, (0, 0, 0)) 
             screen.blit(textBitmap, \
                         [(self.width - textBitmap.get_size()[0]) / 2 + self.x, \
-                          self.height * 0.68 + self.y])
+                        self.height * 0.68 + self.y])
 
 class CharacterClearStatus:
-    def __init__(self, x, y, width, height, player, ID):
+    def __init__(self, x, y, width, height, player, ready_functionality):
         self.x = x
         self.y = y
         self.width = width
+        self.target_width = width
         self.height = height
         self.player = player
-        self.ID = ID
+        self.state = False
+        self.animating = False
+        self.ready_functionality = ready_functionality
+
+    def update(self):
+        self.horizontal_slide()
+
+        if not self.animating and self.ready_functionality:
+            if not self.state and self.player.get_debounced_input(5):
+                self.state = True
+                self.target_width = self.width * 0.90
+            elif self.state and self.player.get_debounced_input(7):
+                self.state = False
+                self.target_width = self.width * 10 / 9
+
+        return self.state
+
+    def horizontal_slide(self):
+        move_factor = 10
+        if abs(self.width - self.target_width) < move_factor:
+            self.width = self.target_width
+            self.animating = False
+        elif self.width - self.target_width > 0:
+            self.width -= move_factor
+            self.animating = True
+        elif self.width - self.target_width < 0:
+            self.width += move_factor 
+            self.animating = True
 
     def draw(self, screen):
-        pygame.draw.rect(screen, (255, 255, 255), (self.x, self.y, self.width, self.height))
+        background = pygame.Surface((self.width, self.height))
+        background.set_alpha(150)
+        background.fill(WHITE)
+        screen.blit(background, [self.x, self.y])
         pygame.draw.rect(screen, self.player.color, (self.x, self.y, self.width, self.height), 2)
-        font_size = 40
-        font = pygame.font.Font("assets/Roboto-Thin.ttf", font_size)
-        textBitmap = font.render("player " + str(self.ID), True, (0, 0, 0)) 
-        screen.blit(textBitmap, \
-                    [self.width * 0.05 + self.x, \
-                      (self.height - textBitmap.get_size()[1]) / 2 + self.y])
-        font_size = 25
-        font = pygame.font.Font("assets/Roboto-Thin.ttf", font_size)
-        textBitmap = font.render("score: " + str(self.player.score), True, (0, 0, 0)) 
-        screen.blit(textBitmap, \
-                    [self.width * 0.93 + self.x - textBitmap.get_size()[0], \
-                      (self.height - textBitmap.get_size()[1]) / 2  + self.y])
 
+        font_size = int(self.height * 0.62)
+        font = pygame.font.Font("assets/Roboto-Thin.ttf", font_size)
+        textBitmap = font.render("player " + str(self.player.ID + 1), True, (0, 0, 0)) 
+        screen.blit(textBitmap, \
+                    [self.x + 25, \
+                    (self.height - textBitmap.get_size()[1]) / 2 + self.y])
+
+        player_name_width = textBitmap.get_size()[0]
+
+        font_size = int(self.height * 0.4)
+        font = pygame.font.Font("assets/Roboto-Thin.ttf", font_size)
+        textBitmap = font.render("score: " + str(self.player.score) + "    enemies killed: " + str(self.player.kills[0]) + \
+                                 "    bros killed: " + str(self.player.kills[1]), True, (0, 0, 0))
+        screen.blit(textBitmap, \
+                    [self.x + player_name_width + 65, \
+                    (self.height - textBitmap.get_size()[1]) / 2  + self.y])
+
+        if self.ready_functionality:
+            font_size = int(self.height * 0.62)
+            font = pygame.font.Font("assets/Roboto-Thin.ttf", font_size)
+            if self.state:
+                textBitmap = font.render("READY", True, (0, 0, 0)) 
+            else:
+                textBitmap = font.render("NOT READY", True, (0, 0, 0))
+
+            screen.blit(textBitmap, \
+                [self.width * 0.98 + self.x - textBitmap.get_size()[0], \
+                (self.height - textBitmap.get_size()[1]) / 2  + self.y])
 

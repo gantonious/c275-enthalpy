@@ -12,6 +12,8 @@ class Entity:
         self._ID = ID
         self._damage = damage
         self._color = color
+        self.last_collision = None
+        self.kills = [0, 0] # [friendlies, enemies]
 
     @property
     def health(self):
@@ -125,6 +127,7 @@ class Entity:
             self._y < coords[1] + coords[3]):
             self._health -= target.damage
             target.health -= self._damage
+            target.last_collision = self
             return True
         return False
 

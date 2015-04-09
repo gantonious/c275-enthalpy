@@ -23,7 +23,7 @@ class Main_Menu(Interface):
         button_x = (self.width - button_width) / 2
         button_y = (self.height - num_buttons * button_height - (num_buttons - 1) * button_height * 0.25) / 2
 
-        self.buttons = RadioButtons(button_x, button_y, button_width, button_height, self.players)
+        self.buttons = RadioButtons(button_x, button_y, button_width, button_height, 0, self.players)
 
         self.buttons.add_radio_button((1, "level_select", ["main_game"]), "cooperative play")
         self.buttons.add_radio_button((1, "level_select", ["legacy_game"]), "head to head")

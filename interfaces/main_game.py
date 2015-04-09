@@ -6,6 +6,7 @@ from loader import *
 import interfaces
 from interfaces.interface import Interface
 from drawing import *
+from elements import *
 from textprint import TextPrint
 
 class Main_Game(Interface):
@@ -29,6 +30,7 @@ class Main_Game(Interface):
             player[1].width = 30
             player[1].height = 30
             player[1].hitbox = 8  
+            player[1].proj_size = 10
             player[1].x = (self.width - len(self.players) * player[1].width - (len(self.players) - 1) * x_spacing) / 2 + player[0] * (player[1].width + x_spacing)
             player[1].y = 600
 
@@ -37,6 +39,16 @@ class Main_Game(Interface):
         self.loaded = False
         self.loader = Loader()
         self.proj_tree = Quadtree(self.play_area[0], self.play_area[1], self.play_area[2], self.play_area[3], 0, 1)
+
+        self.status_bar = []
+        x_spacing = 20
+        status_bar_width = min(self.width * 0.18, (self.width - (len(self.players) - 1) * x_spacing))
+        status_bar_height = self.height - self.play_area[3]
+        status_bar_x = (self.width - len(self.players) * status_bar_width - (len(self.players) - 1) * x_spacing) / 2
+        status_bar_y = self.height - status_bar_height
+
+        for player in enumerate(self.players):
+            self.status_bar.append(CharacterStatusBar(status_bar_x + player[0] * (x_spacing + status_bar_width), status_bar_y, status_bar_width, status_bar_height, player[1]))
 
     def loader_init(self):
         self.loader.interface = self
@@ -48,6 +60,8 @@ class Main_Game(Interface):
         for player in self.alive_players:
             if player.health <= 0:
                 self.alive_players.remove(player)
+                if player.last_collision != None:
+                    player.last_collision.shooter.kills[1] += 1
 
     def update(self, dt):
         """
@@ -86,15 +100,17 @@ class Main_Game(Interface):
 
         if not self.enemies:
             self.loader.set_clear(True)
-
-        if not self.alive_players:
-            return (1, "main_menu", [])
             
-        if self.alive_players[0].get_debounced_input(6):
+        if self.players[0].get_debounced_input(6):
             return (0, "pause_menu", [self.loader.level_name])
 
-        if self.loader.finished and self.enemies == [] or self.players[0].get_debounced_input(7):
-            return (1, "level_clear", [self.players, self.loader.level_name, self.loader.next_level])
+        # level is completed
+        if self.loader.finished and self.enemies == []:
+            return (1, "level_clear", [self.players, self.loader.level_name, self.loader.next_level, True])
+
+        # everyone died gameover
+        if not self.alive_players:
+            return (1, "level_clear", [self.players, self.loader.level_name, self.loader.next_level, False])
 
         return True
 
@@ -111,8 +127,7 @@ class Main_Game(Interface):
             self.loader.game_is_running = False
 
     def draw(self, screen, clock=None):
-        screen.fill((0,0,0))
-        pygame.draw.rect(screen, (255 ,255 ,255), self.play_area)
+        screen.fill((255, 255, 255))
 
         for player in enumerate(self.alive_players):
             draw_entity(screen, player[1])
@@ -132,7 +147,8 @@ class Main_Game(Interface):
             else:
                 drop.update()
 
-        self.proj_tree.draw(screen)
+        for player_status in self.status_bar:
+            player_status.draw(screen)
 
         self.printer.reset()
         self.printer.print_text(screen, "FPS: {}".format(clock.get_fps()), (0, 0, 0))

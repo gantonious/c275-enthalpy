@@ -13,7 +13,7 @@ class Level_Select(Interface):
         pygame.mixer.stop()
         self.background_music = pygame.mixer.Sound(file = "assets/audio/level select.wav")
         self.background_music.play(loops=-1, fade_ms=2000)
-
+        self.reset_players()
 
     def element_init(self):
         """
@@ -51,7 +51,12 @@ class Level_Select(Interface):
 
         for player in enumerate(self.players):
             self.selectors.append(CharacterSelect(selector_x + player[0] * (x_spacing + selector_width), \
-                                 selector_y, selector_width, selector_height, player[1], player[0] + 1))
+                                 selector_y, selector_width, selector_height, player[1]))
+
+    def reset_players(self):
+        for player in self.players:
+            player.kills = [0, 0]
+            player.score = 0
 
     def update(self, dt):
         not_joined = False
@@ -81,9 +86,6 @@ class Level_Select(Interface):
             self.players[0] in locked_players and len(locked_players) >=2:
             self.static_elements[1].background = False
             self.static_elements[1].caption = ""
-
-        if self.players[0].get_debounced_input(6) and self.game_mode == "main_game":
-            self.saver.find_save()
 
         if not_joined and self.players[0].get_debounced_input(7):
             return (1, "main_menu", [])

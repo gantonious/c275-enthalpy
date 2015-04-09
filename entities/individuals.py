@@ -215,6 +215,8 @@ class Enemy(Entity):
 
     def update(self, projs, drop_list, screen, dt):
         if self.health < 0:
+            if self.last_collision != None:
+                self.last_collision.shooter.kills[0] += 1
             self.despawn(drop_list)
         self._move(screen, drop_list, dt)
         self._attack(projs)
@@ -346,6 +348,8 @@ class Boss(Entity):
         if self._healths == []:
             self._healths = [self.health-self.health/len(self._patterns)*i for i in range(1, len(self._patterns))] + [0]
         if self.health < 0:
+            if self.last_collision != None:
+                self.last_collision.shooter.kills[0] += 1
             self.despawn(drops)
         elif self.health < self._healths[self._health_checkpoint]:
             self.switch_pattern()
