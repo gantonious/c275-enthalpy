@@ -13,7 +13,7 @@ class Quadtree:
     """
 
     MAX_CAPACITY = 1
-    MAX_DEPTH = 0
+    MAX_DEPTH = 3
     def __init__(self, x, y, width, height, depth=0):
         self._x = x
         self._y = y
@@ -123,11 +123,11 @@ class Quadtree:
             child.clear()
         self._children = []
 
-    def draw_tree(self, screen):
+    def draw(self, screen):
         """
         Draws Quadtree to specified screen
         """
         pygame.draw.rect(screen, BLACK, [self._x, self._y, self._width, self._height], 1)
         for child in self._children:
-            child.draw_tree(screen)
+            child.draw(screen)
 

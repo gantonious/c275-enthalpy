@@ -4,6 +4,7 @@ from entities.individuals import *
 # import all interfaces for GUI to run
 import interfaces
 from interfaces.main_game import Main_Game
+from interfaces.legacy_game import Legacy_Game
 from interfaces.main_menu import Main_Menu
 from interfaces.pause_menu import Pause_Menu
 from interfaces.level_select import Level_Select
@@ -46,11 +47,9 @@ class GUI:
         pygame.joystick.init()
         joystick_count = pygame.joystick.get_count()
 
-        # IDs 0 and 1 are reserved for self.players for the time being
         for i in range(joystick_count):
             joystick = pygame.joystick.Joystick(i)
             player = Player(i, joystick)
-            # 100, 30, 30, 240, 600, 4, 5, RED
             self.players.append(player)
             player.in_list = self.players
 

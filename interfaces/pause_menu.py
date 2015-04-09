@@ -7,6 +7,7 @@ from elements import *
 class Pause_Menu(Interface):
     def __init__(self, players, width, height, params):
         super().__init__(players, width, height, params)
+        self.level_name = params[0]
         self.element_init()
 
     def element_init(self):
@@ -14,47 +15,42 @@ class Pause_Menu(Interface):
         Initializes all UI elements
         """
         # button init
-        self.buttons = []
         num_buttons = 2
-        button_width = 500
+        button_width = 450
         button_height = 75
-        y_spacing = button_height * 0.25
-
         button_x = (self.width - button_width) / 2
-        button_y = (self.height - num_buttons * button_height - (num_buttons - 1) * y_spacing) / 2
-        self.buttons.append(Button(button_x, button_y, button_width, button_height, None, "resume"))
-        self.buttons.append(Button(button_x, button_y + y_spacing + button_height, button_width, button_height, "main_menu", "return to menu"))
-        self.buttons[0].selected = 1
-        self.selected_button = self.buttons[0]
+        button_y = (self.height - num_buttons * button_height - (num_buttons - 1) * button_height * 0.25) / 2
+
+        self.buttons = RadioButtons(button_x, button_y, button_width, button_height, self.players)
+
+        self.buttons.add_radio_button((1, None, []), "resume")
+        self.buttons.add_radio_button((2, "main_menu", []), "return to menu")
 
         # static element init
         self.static_elements=[]
         self.static_elements.append(TextBox(40, "paused"))
         self.static_elements[0].x = (self.width - self.static_elements[0].get_dimensions()[0]) / 2
         self.static_elements[0].y = self.height * 0.2
+        self.static_elements.append(TextBox(25, "playing " + self.level_name.rstrip()))
+        self.static_elements[1].x = (self.width - self.static_elements[1].get_dimensions()[0]) / 2
+        self.static_elements[1].y = self.height * 0.29
+
 
     def update(self, dt):
         if self.players:
-            if self.players[0].get_input()[3] < -self.threshold or self.players[0].get_input()[1] < -self.threshold:
-                self.buttons[0].selected = 1
-                self.buttons[1].selected = 0
-                self.selected_button = self.buttons[0]
-            elif self.players[0].get_input()[3] > self.threshold or self.players[0].get_input()[1] > self.threshold:
-                self.buttons[0].selected = 0
-                self.buttons[1].selected = 1
-                self.selected_button = self.buttons[1]
+            self.buttons.update()
 
             if self.players[0].get_debounced_input(5):
-                if self.selected_button.event == None:
-                    return (1, self.selected_button.event, [])
-                else:
-                    return (2, self.selected_button.event, [])
+                return self.buttons.selected_button.event
+            elif self.players[0].get_debounced_input(7):
+                return (1, None, [])
 
         return True
 
     def draw(self, screen, clock=None):
-        for button in self.buttons:
-            button.draw(screen)
+        pygame.draw.rect(screen, (255, 255, 255), (self.width * 0.2, self.height * 0.16, self.width * 0.6, self.height * 0.55))
+        pygame.draw.rect(screen, (0, 0, 0), (self.width * 0.2, self.height * 0.16, self.width * 0.6, self.height * 0.55), 2)
+        self.buttons.draw(screen)
         for element in self.static_elements:
             element.draw(screen)
 

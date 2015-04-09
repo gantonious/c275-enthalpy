@@ -20,21 +20,78 @@ class Button:
         self.event = event
         self.selected = 0
         self.color = (BLACK, RED, WHITE)
-        self.font_size = 40
+        self.font_size = int(self.height / 2.5)
         self.caption = caption
 
     def draw(self, screen):
         self.font = pygame.font.Font("assets/Roboto-Thin.ttf", self.font_size)
-        pygame.draw.rect(screen, self.color[2], (self.x, self.y, self.width, self.height))
+        button_background = pygame.Surface((self.width, self.height))
+        button_background.set_alpha(150)
+        button_background.fill(WHITE)
+        screen.blit(button_background, [self.x, self.y])
         pygame.draw.rect(screen, self.color[self.selected], (self.x, self.y, self.width, self.height), 2)
         textBitmap = self.font.render(self.caption, True, (0, 0, 0))
         x = (self.width - textBitmap.get_size()[0]) / 2 + self.x
         y = (self.height - textBitmap.get_size()[1]) / 2 + self.y
         screen.blit(textBitmap, [x, y])
 
+class RadioButtons:
+    """
+    A class that handdles having multiple buttons arranged vertically
+    where only one button can be selected at a time
+    """
+    def __init__(self, x, y, button_width, button_height, players):
+        self.buttons = []
+        self.players = players
+        self.threshold = 0.08
+        self.y_spacing = button_height * 0.25
+        self.x = x
+        self.y = y
+        self.button_width = button_width
+        self.button_height = button_height
+        self.selected_button = None
+        self.stick_debounce = [0, 250]
+
+    def add_radio_button(self, event, caption):
+        self.buttons.append(Button(self.x, self.y + len(self.buttons) * (self.y_spacing + self.button_height), \
+                                 self.button_width, self.button_height, event, caption))
+
+    def select_button(self, target_button):
+        for button in self.buttons:
+            button.selected = 0
+        target_button.selected = 1
+        self.selected_button = target_button
+        self.stick_debounce[0] = pygame.time.get_ticks()
+
+    def update(self):
+        if self.selected_button == None:
+            self.select_button(self.buttons[0])
+
+        if self.players:
+            if pygame.time.get_ticks() - self.stick_debounce[0] > self.stick_debounce[1]:
+                for button in enumerate(self.buttons):
+                    if button[0] == 0:
+                        if (self.players[0].get_input()[3] < -self.threshold or self.players[0].get_input()[1] < -self.threshold) and self.buttons[button[0] + 1].selected == 1:
+                            self.select_button(button[1])
+                            break  
+                    elif button[0] == (len(self.buttons) - 1):
+                        if (self.players[0].get_input()[3] > self.threshold or self.players[0].get_input()[1] > self.threshold) and self.buttons[button[0] - 1].selected == 1:
+                            self.select_button(button[1])
+                            break  
+                    else:
+                        if ((self.players[0].get_input()[3] > self.threshold or self.players[0].get_input()[1] > self.threshold) and self.buttons[button[0] - 1].selected == 1) \
+                            or ((self.players[0].get_input()[3] < -self.threshold or self.players[0].get_input()[1] < -self.threshold) and self.buttons[button[0] + 1].selected == 1):
+                            self.select_button(button[1])
+                            break
+
+    def draw(self, screen):
+        for button in self.buttons:
+            button.draw(screen)
+
 class TextBox:
     def __init__(self, font_size, caption=""):
-        self.color = BLACK
+        self._color = BLACK
+        self._font_face = "Roboto-Thin.ttf"
         self.font_size = font_size
         self.caption = caption
 
@@ -71,10 +128,31 @@ class TextBox:
     @font_size.setter
     def font_size(self, font_size):
         self._font_size = font_size
-        self.font = pygame.font.Font("assets/Roboto-Thin.ttf", self.font_size)
+        self.font = pygame.font.Font("assets/" + self.font_face, self.font_size)
+
+    @property
+    def font_face(self):
+        return self._font_face
+
+    @font_face.setter
+    def font_face(self, font_face):
+        try:
+            self.font = pygame.font.Font("assets/" + font_face, self.font_size)
+            self._font_face = font_face
+        except:
+            pass
+
+    @property
+    def color(self):
+        return self._color
+    
+    @color.setter
+    def color(self, color):
+        self._color = color
+        self.render_text()
 
     def render_text(self):
-        self.textBitmap = self.font.render(self.caption, True, (0, 0, 0))
+        self.textBitmap = self.font.render(self.caption, True, self.color)
 
     def get_dimensions(self):
         return self.textBitmap.get_size()
@@ -155,6 +233,11 @@ class CharacterSelect:
             self.animating = True
 
     def draw(self, screen):
+        background = pygame.Surface((self.width, self.height))
+        background.set_alpha(150)
+        background.fill(WHITE)
+        screen.blit(background, [self.x, self.y])
+
         pygame.draw.rect(screen, BLACK, (self.x, self.y, self.width, self.height), 2)
         font_size = 30
         font = pygame.font.Font("assets/Roboto-Thin.ttf", font_size)
@@ -185,7 +268,7 @@ class CharacterSelect:
             textBitmap = font.render("ready, press o to unready", True, (0, 0, 0)) 
             screen.blit(textBitmap, \
                         [(self.width - textBitmap.get_size()[0]) / 2 + self.x, \
-                          self.height * 0.7 + self.y])
+                          self.height * 0.68 + self.y])
 
 class CharacterClearStatus:
     def __init__(self, x, y, width, height, player, ID):
