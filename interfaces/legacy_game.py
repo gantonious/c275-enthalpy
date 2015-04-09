@@ -16,6 +16,9 @@ class Legacy_Game(Interface):
         self.printer = TextPrint()
         self.play_area = [0, 0, self.width, self.height*0.9]
         self.players = params[0]
+        pygame.mixer.stop()
+        self.background_music = pygame.mixer.Sound(file = "assets/audio/main game.wav")
+        self.background_music.play(loops=-1, fade_ms=2000)
         self.reset()
 
     def reset(self):

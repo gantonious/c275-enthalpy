@@ -42,6 +42,9 @@ class Main_Menu(Interface):
         self.static_elements[1].y = self.height - self.static_elements[1].get_dimensions()[1]*1.7
         self.static_elements.append(PictureBox(self.static_elements[1].x + self.static_elements[1].get_dimensions()[0] + 5, self.height - 53, \
                                     pygame.transform.scale(pygame.image.load("assets/icons/PS4_Cross.png").convert_alpha(), (45, 45))))
+        self.static_elements.append(TextBox(20, "Steven Boddez and George Antonious"))
+        self.static_elements[3].x = 20
+        self.static_elements[3].y = self.height - self.static_elements[1].get_dimensions()[1]*1.7
 
     def update(self, dt):
         if self.players:
