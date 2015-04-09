@@ -1,14 +1,26 @@
 FORMAT:
 -----------------------------------------
 
-Level: <number>
 Name: <name>
+Next level: <filename>
 
 Enemies:
 
-<Enemy/Boss> <x> <y> <health> <width> <height> <hitbox>
+<Enemy/Boss> <x> <y> <health> <width> <height> <hitbox> <fire rate>
 *<pattern> {parameters}
 **<projectile> <health> <width> <height> {parameters}
-+{options}
+
+***<drop> {parameters}
 
 Enemies end
+
+
+
+# comment out stuff like this
+# if an enemy is a boss, you can add more patterns and projectiles like
+*<pattern>
+**<projectile>
+*<pattern>
+**<projectile>
+* etc...
+# and it will do them in order as it loses health

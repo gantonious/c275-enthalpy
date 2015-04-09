@@ -1,4 +1,4 @@
-import entities, time
+import entities, time, random
 
 class Loader:
     def __init__(self):
@@ -166,7 +166,7 @@ class Loader:
                     entity.projectile_params += [[float(proj_list[j][i]) for i in range(1, len(proj_list[j])-1)]]
                     if entities.entity_types[proj_list[j][0]].targets:
                         if len(self.players) > int(proj_list[j][-1]):
-                            entity.projectile_params[-1].append(self.players[int(proj_list[j][-1])])
+                            entity.projectile_params[-1].append(random.choice(self.players))
                         else:
                             entity.projectile_params[-1].append(None)
                     else:
