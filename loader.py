@@ -25,6 +25,8 @@ class Loader:
                     continue
                 if self.get_clear() and self.load_next(lvl) is None:
                     break
+                else:
+                    time.sleep(0.1)
         self.finished = True
 
     def load_header(self, lvl):

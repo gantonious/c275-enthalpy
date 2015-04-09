@@ -15,7 +15,7 @@ class Drop(Entity):
         return self._used
 
     def collide(self, target):
-        if target.ID not in [0,1]:
+        if target.ID == 100: # enemies
             return False
         coords = target.get_position()
         if (self._x + self._width > coords[0] and \

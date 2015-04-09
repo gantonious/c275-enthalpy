@@ -155,5 +155,6 @@ class Main_Game(Interface):
 
         self.printer.reset()
         self.printer.print_text(screen, "FPS: {}".format(clock.get_fps()), (0, 0, 0))
+        self.printer.print_text(screen, "Projectiles: {}".format(len(self.projs)), (0, 0, 0))
 
 interfaces.interface_types["main_game"] = Main_Game
