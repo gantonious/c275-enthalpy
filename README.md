@@ -19,23 +19,23 @@ To run the game, do
 
 Gameplay
 --------
-**cooperative play (min 1 player)**
+**cooperative play (min 1 player): **
 The objective of this game mode is to kill all enemies (outlined in black) shooting at you. If a player dies they cannot return until the next level, if all players die the stage is failed. Note friendly fire is enabled so watch out. If a level is successfully cleared, players will be prompted to lock in to play the next level. When certain enemies die they may spawn some drops as a reward:
 - Yellow Drop: increases your score
 - Magenta Drop: temporary grants you invincibility
 - Blue Drop: temporary increases your shot size
 
-**head to head (min 2 players)** 
+**head to head (min 2 players): ** 
 The objective of this game mode is to be the last player alive on the field. The mechanics are simple, aim your shots at your opponents and try and take them out. Note bullets collide with other players bullets, so use that to your advantage.
 
 Menu
 ----
 Note the menu system can only be navigated by player 1 (cause no one likes people spamming different buttons at the same time). The menu can be navigated using either stick on the controller. To select press 'X', to go back press 'O'. To pause the game press the "options" button.
 
-**player select screen**
+**player select screen: **
 Players are prompted to ready up and select their color. Once players intending on playing are ready. Player 1 one should press the select button to start the game.
 
-**level clear screen**
+**level clear screen: **
 If there is a next level, players will be prompted to ready up to play the next level. Once players who still want to play are readied player 1 should press the select to move on to the next level. If you don't want to play the next level and return to the main menu, launch the pause menu and return to the main menu. If there is no next level or head to head mode is being played, the players will be prompted to play again or return to the main menu.
 
 Level Creation
@@ -58,7 +58,7 @@ File Descriptions
 **levels/**: contains level files
 
 **entities/** contains all code related to an Entity
-- entities/__init__.py: contains file and class names
+- entities/'__init__'.py: contains file and class names
 - entities/entity.py: base Entity class
 - entities/individuals.py: contains the Player, Enemey, and Boss classes
 - entities/projectiles.py: contains various projectile classes extended from the base Projectile class
@@ -66,7 +66,7 @@ File Descriptions
 - entities/drops.py: contain various drop classes extended from the base Drop class
 
 **interfaces/** contains all code related to an Interface
-- interfaces/__init__.py: contains file and class names
+- interfaces/'__init__'.py: contains file and class names
 - interfaces/interface.py: base Interface class
 - interfaces/main_menu.py: contains the Main_Menu class
 - interfaces/pause_menu.py: contains the Pause_Menu class
