@@ -11,7 +11,7 @@ Installing/Running
 This game was built in Python3 using pygame 1.9.2a0, pygame distributions can be found at:
 http://www.pygame.org/download.shtml
 
-This game currently supports PS3 and PS4 controllers.
+This game currently supports PS3 and PS4 controllers. All controllers intended on being used must be connected to your computer before launching the game.
 
 To run the game, do
 

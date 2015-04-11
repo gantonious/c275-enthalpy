@@ -41,7 +41,7 @@ class Player(Entity):
         elif self._joystick.get_name() == "PLAYSTATION(R)3 Controller":
             self._map = [0, 1, 2, 3, 11, 14, 3, 13] # PS3 controller
         else:
-            self._map = [0, 1, 2, 2, 2, 0, 3, 1] # default
+            self._map = [0, 1, 2, 3, 11, 14, 3, 13] # default
 
     def _move(self, dimensions, dt):
         joy_input = self.get_input()
