@@ -22,6 +22,7 @@ class Pause_Menu(Interface):
         button_y = (self.height - num_buttons * button_height - (num_buttons - 1) * button_height * 0.25) / 2
 
         self.buttons = RadioButtons(button_x, button_y, button_width, button_height, 0, self.players)
+        self.buttons.select_colors = ((0, 0, 0), self.players[0].color)
 
         self.buttons.add_radio_button((1, None, []), "resume")
         self.buttons.add_radio_button((2, "main_menu", []), "return to menu")
@@ -41,8 +42,10 @@ class Pause_Menu(Interface):
             self.buttons.update()
 
             if self.players[0].get_debounced_input(5):
+                # player pressed select, do what the button says to
                 return self.buttons.selected_button.event
             elif self.players[0].get_debounced_input(7):
+                # player pressed back leave menu
                 return (1, None, [])
 
         return True

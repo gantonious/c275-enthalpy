@@ -7,13 +7,11 @@ from elements import *
 import interfaces
 from interfaces.interface import Interface
 from drawing import *
-from textprint import TextPrint
 
 class Legacy_Game(Interface):
     def __init__(self, players, width, height, params):
         self.projs = []
         super().__init__(players, width, height, params)
-        self.printer = TextPrint()
         self.play_area = [0, 0, self.width, self.height*0.9]
         self.players = params[0]
         pygame.mixer.stop()
@@ -31,6 +29,7 @@ class Legacy_Game(Interface):
             player[1].height = 30
             player[1].hitbox = 8  
             player[1].proj_size = 10
+            player[1].invuln_active = False
             player[1].x = (self.width - len(self.players) * player[1].width - (len(self.players) - 1) * x_spacing) / 2 + player[0] * (player[1].width + x_spacing)
             player[1].y = 600
 
@@ -105,7 +104,5 @@ class Legacy_Game(Interface):
         for player_status in self.status_bar:
             player_status.draw(screen)
 
-        self.printer.reset()
-        self.printer.print_text(screen, "FPS: {}".format(clock.get_fps()), (0, 0, 0))
 
 interfaces.interface_types["legacy_game"] = Legacy_Game

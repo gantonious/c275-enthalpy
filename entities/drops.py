@@ -85,7 +85,7 @@ class InvulnDrop(Drop):
         if self._target:
             if pygame.time.get_ticks() - self._use_time >= 1000*self._time:
                 self._target.hitbox = self._old_hitbox
-                self._target.invuln_active = True
+                self._target.invuln_active = False
                 self.despawn()
 
 entities.drop_types["Score"] = ScoreDrop

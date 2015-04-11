@@ -87,10 +87,9 @@ class GUI:
             now = pygame.time.get_ticks()
             dt = (now - last_time) / 1000 # in seconds
 
-            # EVENT PROCESSING STEP
-            for event in pygame.event.get(): # User did something
+            for event in pygame.event.get():
                 if event.type == pygame.QUIT: # If user clicked close
-                    alive = False # Flag that we are done so we exit this loop
+                    alive = False
 
             interface_status = self.interfaces[-1].update(dt)
             self.interfaces[-1].draw(self.screen, clock=self.clock)

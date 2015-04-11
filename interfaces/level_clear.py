@@ -17,7 +17,7 @@ class Level_Clear(Interface):
         """
         Initializes all UI elements
         """
-        self.background = PictureBox(0, 0, pygame.image.load("assets/background.jpg").convert())
+        self.background = PictureBox(0, 0, pygame.image.load("assets/background.png").convert())
 
         # static element init
         self.static_elements=[]
@@ -42,16 +42,19 @@ class Level_Clear(Interface):
 
         self.static_elements[0].x = (self.width - self.static_elements[0].get_dimensions()[0]) / 2
         self.static_elements[0].y = self.height * 0.08
+        self.static_elements[0].color = (255, 255, 255)
         self.static_elements.append(TextBox(20, "Back"))
         self.static_elements[1].x = self.width - self.static_elements[1].get_dimensions()[0] - 60
         self.static_elements[1].y = self.height - self.static_elements[1].get_dimensions()[1]*1.7
+        self.static_elements[1].color = (255, 255, 255)
         self.static_elements.append(PictureBox(self.static_elements[1].x + self.static_elements[1].get_dimensions()[0] + 5, self.height - 53, \
-                                    pygame.transform.scale(pygame.image.load("assets/icons/PS4_Circle.png").convert_alpha(), (45, 45))))
+                                    pygame.image.load("assets/icons/PS4_Circle.png").convert_alpha()))
         self.static_elements.append(TextBox(20, "Select"))
         self.static_elements[3].x = self.static_elements[1].x - self.static_elements[2].get_dimensions()[0] - 60
         self.static_elements[3].y = self.height - self.static_elements[3].get_dimensions()[1]*1.7  
+        self.static_elements[3].color = (255, 255, 255)
         self.static_elements.append(PictureBox(self.static_elements[3].x + self.static_elements[3].get_dimensions()[0] + 5, self.height - 53, \
-                            pygame.transform.scale(pygame.image.load("assets/icons/PS4_Cross.png").convert_alpha(), (45, 45))))
+                                    pygame.image.load("assets/icons/PS4_Cross.png").convert_alpha()))
 
         score_sorted_players = self.players[:]
         score_sorted_players.sort(key=lambda x:x.score, reverse=True)
@@ -73,6 +76,7 @@ class Level_Clear(Interface):
                                                             clear_status_width, clear_status_height, player[1], clear_status_functionality))
     def update(self, dt):
         if self.next_level != None and self.win == True:
+            # there is a next level to play, grab locked players
             locked_players = []
 
             for selector in self.selectors:
@@ -82,10 +86,12 @@ class Level_Clear(Interface):
 
             if self.players[0] in locked_players and self.players[0].get_debounced_input(5):
                 if self.next_level != None:
+                    # main player has locked and wants to start game, start it
                     locked_players.sort(key=lambda x:x.ID)
                     return (1, "main_game", [locked_players, "levels/" + self.next_level])
         else:
             self.buttons.update()
+            # no next level, main player uses the radio buttons to navigate
             if self.players[0].get_debounced_input(5):
                 return self.buttons.selected_button.event
 

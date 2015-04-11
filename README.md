@@ -51,14 +51,12 @@ File Descriptions
 - gui.py: contains the GUI class that handles running interfaces and acts as the middle man when changing interfaces
 - elements.py: contains various UI element classes used by an interface
 - drawing.py: contains various drawing functions
-- textprint.py: contains the TextPrint class used to print text to the screen
 
 **assets/**: contains various media used in the game
 
 **levels/**: contains level files
 
 **entities/** contains all code related to an Entity
-- entities/__init__.py: contains file and class names
 - entities/entity.py: base Entity class
 - entities/individuals.py: contains the Player, Enemey, and Boss classes
 - entities/projectiles.py: contains various projectile classes extended from the base Projectile class
@@ -66,7 +64,6 @@ File Descriptions
 - entities/drops.py: contain various drop classes extended from the base Drop class
 
 **interfaces/** contains all code related to an Interface
-- interfaces/__init__.py: contains file and class names
 - interfaces/interface.py: base Interface class
 - interfaces/main_menu.py: contains the Main_Menu class
 - interfaces/pause_menu.py: contains the Pause_Menu class
@@ -78,3 +75,4 @@ File Descriptions
 Credits
 -------
 Original Soundtrack by Steven Boddez
+Menu Background found at http://static.zerochan.net/full/45/28/1076445.jpg
