@@ -49,11 +49,11 @@ class GUI:
 
         for i in range(joystick_count):
             joystick = pygame.joystick.Joystick(i)
-            player = Player(i, joystick)
+            player = Player(len(self.players), joystick)
             self.players.append(player)
             player.in_list = self.players
 
-            if (player.get_init == 0):
+            if (player.get_init() == False):
                 self.players.remove(player) # joystick init failed, drop self.player
 
     def add_interface(self, interface):

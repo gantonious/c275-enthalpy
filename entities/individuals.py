@@ -23,6 +23,7 @@ class Player(Entity):
         self._threshold = 0.08
         self._joystick = joystick # grabs this players joystick object
         self._map = [] # key bindings
+        self._init_status = False
         joystick.init() # initializes joysticks
         self._check_init() # makes sure joystick initialized succesfully
         self._button_debounce = [1 for i in range(len(self._map))]
@@ -38,10 +39,13 @@ class Player(Entity):
     def _map_joystick(self):
         if self._joystick.get_name() == "Wireless Controller":
             self._map = [0, 1, 2, 3, 4, 1, 9, 2] # PS4 controller
+            self._init_status = True
         elif self._joystick.get_name() == "PLAYSTATION(R)3 Controller":
             self._map = [0, 1, 2, 3, 11, 14, 3, 13] # PS3 controller
+            self._init_status = True
         else:
-            self._map = [0, 1, 2, 3, 11, 14, 3, 13] # default
+            self._init_status = False # not a compatible controller
+            self._joystick.quit()
 
     def _move(self, dimensions, dt):
         joy_input = self.get_input()
@@ -106,7 +110,7 @@ class Player(Entity):
         return debounced_input
 
     def get_init(self):
-        return self._joystick.get_init()
+        return self._init_status
 
     def update(self, projs, dimensions, dt):
         self._move(dimensions, dt)
