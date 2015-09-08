@@ -4,7 +4,7 @@ Steven Boddez and George Antonious, CMPUT 275 Section EB1
 
 Description
 -----------
-EnthalPy will be a single-player/co-op bullet hell game in the likes of Touhou and Geometry Wars. The game will feature enemies and bosses with unique bullet and moving patterns, multiple levels, controller support, and a power-up/points system. The idea is to have a fast-paced environment where the player(s) must dodge large amounts of projectiles while using their own shots to defeat enemies. Many of the concepts used in this game can be carried over from last semester’s PvPuino project.
+EnthalPy is a single-player/co-op bullet hell game in the likes of Touhou and Geometry Wars. The game features enemies and bosses with unique bullet and moving patterns, multiple levels, controller support, and a power-up/points system. The idea is to have a fast-paced environment where the player(s) must dodge large amounts of projectiles while using their own shots to defeat enemies. Many of the concepts used in this game have been carried over from last semester’s PvPuino project.
 
 Installing/Running
 ------------------
@@ -30,7 +30,7 @@ The objective of this game mode is to be the last player alive on the field. The
 
 Menu
 ----
-Note the menu system can only be navigated by player 1 (cause no one likes people spamming different buttons at the same time). The menu can be navigated using either stick on the controller. To select press 'X', to go back press 'O'. To pause the game press the "options" button.
+Note the menu system can only be navigated by player 1 (because no one likes people spamming different buttons at the same time). The menu can be navigated using either stick on the controller. To select press 'X', to go back press 'O'. To pause the game press the "options" button.
 
 **player select screen:**
 Players are prompted to ready up and select their color. Once players intending on playing are ready. Player 1 one should press the select button to start the game.
